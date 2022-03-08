@@ -1,0 +1,1 @@
+1646747883428|0|statement|connection 0|url jdbc:p6spy:sqlite::resource:rec.db|select * from user|select * from user
