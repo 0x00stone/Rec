@@ -16,6 +16,6 @@ public class userController {
     @ResponseBody
     @RequestMapping("/query")
     public String queryUserList(){
-        return userService.queryUserList().get(0).toString();
+        return null;
     }
 }

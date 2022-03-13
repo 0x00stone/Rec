@@ -1,7 +1,7 @@
 package com.revers.rec.util.cypher;
 
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
@@ -14,11 +14,13 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 public class rsa {
     public static final String CHARSET = "UTF-8";
-    public static final String RSA_ALGORITHM = "RSA"; // ALGORITHM 算法的意思
+    public static final String RSA_ALGORITHM = "RSA"; // ALGORITHM ['ælgərɪð(ə)m] 算法的意思
 
-    public static Map<Integer, String> getRsaKey(int keySize) {
+    public static Map<String, String> createKeys(int keySize) {
         // 为RSA算法创建一个KeyPairGenerator对象
         KeyPairGenerator kpg;
         try {
@@ -38,9 +40,9 @@ public class rsa {
         Key privateKey = keyPair.getPrivate();
         String privateKeyStr = Base64.encodeBase64URLSafeString(privateKey.getEncoded());
         // map装载公钥和私钥
-        Map<Integer, String> keyPairMap = new HashMap<Integer, String>();
-        keyPairMap.put(0, publicKeyStr);
-        keyPairMap.put(1, privateKeyStr);
+        Map<String, String> keyPairMap = new HashMap<String, String>();
+        keyPairMap.put("publicKey", publicKeyStr);
+        keyPairMap.put("privateKey", privateKeyStr);
         // 返回map
         return keyPairMap;
     }
@@ -73,30 +75,23 @@ public class rsa {
 
     /**
      * 公钥加密
-     * @param data
-     * @param publicKey1
-     * @return
      */
-    public static String publicEncrypt(String publicKey1,String data) {
+    public static String publicEncrypt(String data, String publicKey1) {
         try {
             RSAPublicKey publicKey = getPublicKey(publicKey1);
             Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return Base64.encodeBase64URLSafeString(rsaSplitCodec(cipher, Cipher.ENCRYPT_MODE, data.getBytes(CHARSET), publicKey.getModulus().bitLength()));
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(publicKey1+"加密字符串[" + data + "]时遇到异常", e);
+            throw new RuntimeException("加密字符串[" + data + "]时遇到异常", e);
         }
     }
 
     /**
      * 私钥解密
-     * @param data
-     * @param privateKey1
-     * @return
      */
 
-    public static String privateDecrypt(String privateKey1,String data) {
+    public static String privateDecrypt(String data, String privateKey1) {
         try {
             RSAPrivateKey privateKey = getPrivateKey(privateKey1);
             Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
@@ -109,12 +104,9 @@ public class rsa {
 
     /**
      * 私钥加密
-     * @param data
-     * @param privateKey1
-     * @return
      */
 
-    public static String privateEncrypt(String privateKey1,String data) {
+    public static String privateEncrypt(String data, String privateKey1) {
         try {
             RSAPrivateKey privateKey = getPrivateKey(privateKey1);
             Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
@@ -128,12 +120,9 @@ public class rsa {
 
     /**
      * 公钥解密
-     * @param data
-     * @param publicKey1
-     * @return
      */
 
-    public static String publicDecrypt(String publicKey1,String data) {
+    public static String publicDecrypt(String data, String publicKey1) {
         try {
             RSAPublicKey publicKey = getPublicKey(publicKey1);
             Cipher cipher = Cipher.getInstance(RSA_ALGORITHM);
