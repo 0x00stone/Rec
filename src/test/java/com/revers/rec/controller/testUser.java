@@ -2,6 +2,7 @@ package com.revers.rec.controller;
 
 import com.revers.rec.RecApplication;
 import com.revers.rec.config.accountConfig;
+import com.revers.rec.domain.user;
 import com.revers.rec.mapper.userMapper;
 import com.revers.rec.service.userServiceImpl;
 import org.junit.Test;
@@ -26,12 +27,24 @@ public class testUser {
 
     @Test
     public void testServiceCreateUser() throws NoSuchAlgorithmException {
-        userService.createUser("小小","123456");
+        userService.register("小小1","123456");
 
-        userService.login("小小","123456");
+        userService.login("小小1","123456");
 
         System.out.println(accountConfig.getAeskey());
     }
 
+
+    @Test
+    public void testSelectAllUser(){
+        for(com.revers.rec.domain.user user :userMapper.selectAllUser()){
+            System.out.println(user);
+        }
+    }
+
+    @Test
+    public void testDeleteAllUser(){
+        userMapper.deleteUser("小小");
+    }
 
 }

@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface userService {
 
-    public boolean login(String username,String password);
+    //0 登录成功 , 1 登录失败,用户不存在
+    public int login(String username,String password);
 
-    public void createUser(String username,String password) throws NoSuchAlgorithmException;
+
+    //0 创建成功 , 1 创建失败,用户已存在
+    public int register(String username,String password) throws NoSuchAlgorithmException;
 }
