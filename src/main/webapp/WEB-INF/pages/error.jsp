@@ -12,5 +12,8 @@
 </head>
 <body>
 ${msg}
+<br/>
+<a href="/">登录</a>
+<a href="registerPage">注册</a>
 </body>
 </html>

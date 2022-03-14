@@ -36,7 +36,7 @@ public class userController {
         int flag = userService.register(username, password);
         if (flag == 0) {
             data.put("msg","注册成功");
-            return new ModelAndView("success");
+            return new ModelAndView("success",data);
         } else if(flag == 1){
             data.put("msg",username+ " 当前已存在");
             return new ModelAndView("error",data);
@@ -59,7 +59,7 @@ public class userController {
         int flag = userService.login(username,password);
         if (flag == 0) {
             data.put("msg","登录成功");
-            return new ModelAndView("success");
+            return new ModelAndView("success",data);
         } else if(flag == 1){
             data.put("msg",username+ " 当前不存在");
             return new ModelAndView("error",data);
