@@ -1,10 +1,10 @@
 package com.revers.rec.controller;
 
 import com.revers.rec.RecApplication;
-import com.revers.rec.config.accountConfig;
-import com.revers.rec.domain.user;
-import com.revers.rec.mapper.userMapper;
-import com.revers.rec.service.userServiceImpl;
+import com.revers.rec.config.AccountConfig;
+import com.revers.rec.domain.User;
+import com.revers.rec.mapper.UserMapper;
+import com.revers.rec.service.UserServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,13 @@ import java.security.NoSuchAlgorithmException;
 @SpringBootTest(classes = RecApplication.class)
 public class testUser {
     @Autowired
-    private userMapper userMapper;
+    private UserMapper userMapper;
 
     @Autowired
-    private userServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Autowired
-    private accountConfig accountConfig;
+    private AccountConfig accountConfig;
 
     @Test
     public void testServiceCreateUser() throws NoSuchAlgorithmException {
@@ -37,7 +37,7 @@ public class testUser {
 
     @Test
     public void testSelectAllUser(){
-        for(com.revers.rec.domain.user user :userMapper.selectAllUser()){
+        for(User user :userMapper.selectAllUser()){
             System.out.println(user);
         }
     }

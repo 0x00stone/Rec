@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class sha256 {
+public class Sha256 {
     /**
      * 利用java原生的类实现SHA256加密
      *

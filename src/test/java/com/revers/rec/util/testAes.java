@@ -8,10 +8,10 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import static com.revers.rec.util.cypher.aes.*;
-import static com.revers.rec.util.cypher.sha256.getSHA256;
-import static com.revers.rec.util.cypher.vigenere.deVigenere;
-import static com.revers.rec.util.cypher.vigenere.enVigenere;
+import static com.revers.rec.util.cypher.Aes.*;
+import static com.revers.rec.util.cypher.Sha256.getSHA256;
+import static com.revers.rec.util.cypher.Vigenere.deVigenere;
+import static com.revers.rec.util.cypher.Vigenere.enVigenere;
 
 public class testAes {
 

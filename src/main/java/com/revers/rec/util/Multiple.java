@@ -1,6 +1,6 @@
 package com.revers.rec.util;
 
-public class multiple {
+public class Multiple {
     public String encryptSql(String string){
         return null;
     }

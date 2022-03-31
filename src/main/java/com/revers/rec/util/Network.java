@@ -6,7 +6,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-public class network {
+public class Network {
     public static boolean isReservedAddr(InetAddress inetAddr) {
         if (inetAddr.isAnyLocalAddress() || inetAddr.isLinkLocalAddress() || inetAddr.isLoopbackAddress()) {
             return true;
@@ -24,7 +24,7 @@ public class network {
             while (inetAds.hasMoreElements()) {
                 inetAddress = inetAds.nextElement();
                 //检查此地址是否是IPv6地址以及是否是保留地址
-                if (inetAddress instanceof Inet6Address && !network.isReservedAddr(inetAddress)) {
+                if (inetAddress instanceof Inet6Address && !Network.isReservedAddr(inetAddress)) {
                     break outer;
 
                 }
