@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 
-import static com.revers.rec.util.cypher.rsa.*;
+import static com.revers.rec.util.cypher.Rsa.*;
 
 public class testRsa {
     @Test
