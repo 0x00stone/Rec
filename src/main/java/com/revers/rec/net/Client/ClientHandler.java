@@ -1,26 +1,21 @@
 package com.revers.rec.net.Client;
 
-
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.CharsetUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
-        String response = msg.content().toString(CharsetUtil.UTF_8);
-        if (response.startsWith("QOTM: ")) {
-            System.out.println("接收响应: " + response);
-            ctx.close();
-        }
-        System.out.println("client receive message from the server");
-    }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close();
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
+
+        System.out.println("Received: " + datagramPacket.content().toString(CharsetUtil.UTF_8));
     }
 }

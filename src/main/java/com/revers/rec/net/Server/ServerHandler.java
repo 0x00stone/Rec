@@ -1,36 +1,28 @@
 package com.revers.rec.net.Server;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 
+import java.util.concurrent.ThreadLocalRandom;
+
+/**
+ * Created by IntelliJ IDEA 14.
+ * User: karl.zhao
+ * Time: 2016/1/21 0021.
+ */
 public class ServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-    }
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
+        // 因为Netty对UDP进行了封装，所以接收到的是DatagramPacket对象。
+        String req = datagramPacket.content().toString(CharsetUtil.UTF_8);
+        System.out.println(req);
 
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
-        System.err.println(packet);
-        System.out.println("I receive your message");
-        if ("QOTM?".equals(packet.content().toString(CharsetUtil.UTF_8))) {
-            ctx.write(new DatagramPacket(
-                    Unpooled.copiedBuffer("QOTM: " + "服务端收到了这条消息", CharsetUtil.UTF_8), packet.sender()));
-        }
-    }
+            channelHandlerContext.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
+                    "结果：收到消息",CharsetUtil.UTF_8),datagramPacket.sender()));
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        // We don't close the channel because we can keep serving requests.
     }
 }
