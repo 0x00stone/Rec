@@ -17,7 +17,7 @@ public interface UserMapper {
     public User findUserByUsername(String username);
 
 
-    @Insert("insert into user(id,username,publicKey,privateKey,sign,aeskey)values(#{id},#{username},#{publicKey},#{privateKey},#{sign},#{aeskey});")
+    @Insert("insert into user(id,username,publicKey,privateKey,aeskey)values(#{id},#{username},#{publicKey},#{privateKey},#{aeskey});")
     public boolean createUser(User user);
 
 

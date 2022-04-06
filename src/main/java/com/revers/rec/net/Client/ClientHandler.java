@@ -12,7 +12,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     public void channelRead0(ChannelHandlerContext ctx, DatagramPacket msg) throws Exception {
         String response = msg.content().toString(CharsetUtil.UTF_8);
         if (response.startsWith("QOTM: ")) {
-            System.out.println("Quote of the Moment: " + response.substring(6));
+            System.out.println("接收响应: " + response);
             ctx.close();
         }
         System.out.println("client receive message from the server");

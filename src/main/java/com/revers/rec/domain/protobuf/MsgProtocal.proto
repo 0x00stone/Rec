@@ -1,0 +1,11 @@
+syntax = "proto3";
+option java_outer_classname = "MsgProtobuf";
+
+message connection {
+  string srcId = 1;
+  string destId = 2;
+  string srcPublicKey = 3;
+  string destPublicKey = 4;
+  string data = 5;
+}
+

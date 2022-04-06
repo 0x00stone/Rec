@@ -21,7 +21,9 @@ public class Server implements Runnable{
             b.bind(PORT).sync().channel().closeFuture().await();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
+        } catch (Exception e){
+            e.printStackTrace();
+        }finally {
             group.shutdownGracefully();
         }
     }

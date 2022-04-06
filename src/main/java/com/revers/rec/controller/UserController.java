@@ -19,9 +19,6 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private AccountConfig accountConfig;
-
-    @Autowired
     private UserServiceImpl userService;
 
 
