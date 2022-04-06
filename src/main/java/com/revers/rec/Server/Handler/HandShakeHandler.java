@@ -1,0 +1,50 @@
+package com.revers.rec.Server.Handler;/*
+package com.revers.rec.Server.Handler;
+
+
+import cn.sawyer.mim.tool.enums.MsgType;
+import cn.sawyer.mim.tool.protocol.MimProtocol;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import static cn.sawyer.mim.server.util.ConnSessionCache.channelMap;
+
+public class HandShakeHandler extends ChannelInboundHandlerAdapter {
+
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        MimProtocol protocol = (MimProtocol) msg;
+
+        if (protocol != null && protocol.getType() == MsgType.HANDSHAKE_REQ) {
+            System.out.println("[+] 握手请求:" + protocol);
+            MimProtocol handshakeResp = buildResponse();
+            ctx.writeAndFlush(handshakeResp);
+            if (channelMap.containsKey(protocol.getSrcId())) {
+                // 清除重复连接
+                System.out.println("清除连接：" + protocol.getSrcId());
+                channelMap.get(protocol.getSrcId()).close();
+                channelMap.remove(protocol.getSrcId());
+            }
+
+            System.out.println("缓存id-channel :" + protocol.getSrcId() + "-" + ctx.channel().remoteAddress());
+            channelMap.put(protocol.getSrcId(), (NioSocketChannel) ctx.channel());
+        } else {
+            ctx.fireChannelRead(msg);
+        }
+    }
+
+    // 构造握手响应
+    private MimProtocol buildResponse() {
+        MimProtocol protocol = new MimProtocol();
+        protocol.setType(MsgType.HANDSHAKE_RESP);
+
+        return protocol;
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.close();
+        ctx.fireExceptionCaught(cause);
+    }
+}
+*/
