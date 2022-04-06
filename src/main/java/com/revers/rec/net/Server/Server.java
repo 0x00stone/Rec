@@ -9,6 +9,8 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 public class Server implements Runnable{
     private static final int PORT = 7686;
@@ -20,14 +22,15 @@ public class Server implements Runnable{
             Bootstrap b = new Bootstrap()
                     .group(group)
                     .channel(NioDatagramChannel.class)
+                    .option(ChannelOption.SO_KEEPALIVE, false)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         public void initChannel(Channel ch){
                             ChannelPipeline pipeline=ch.pipeline();
-                            pipeline.addLast(new ProtobufVarint32FrameDecoder());
-                            pipeline.addLast(new ProtobufDecoder(MsgProtobuf.connection.getDefaultInstance()));
-                            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
-                            pipeline.addLast(new ProtobufEncoder());
+                            //往pipeline链中添加一个解码器
+                            pipeline.addLast("decoder",new StringDecoder());
+                            //往pipeline链中添加一个编码器
+                            pipeline.addLast("encoder",new StringEncoder());
                             pipeline.addLast(new ServerHandler());
                         }
                     });

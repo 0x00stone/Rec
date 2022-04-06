@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Component
 @Getter
 @Setter
-public class data implements Serializable {
+public class Data implements Serializable {
     private String srcId;
     private String destId;
     private String srcPublicKey;

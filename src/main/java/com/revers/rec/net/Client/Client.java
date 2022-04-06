@@ -1,6 +1,9 @@
 package com.revers.rec.net.Client;
 
+import com.revers.rec.domain.Connection;
+import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.util.Byte;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -17,14 +20,17 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 import io.netty.util.internal.SocketUtils;
 
+import java.nio.charset.StandardCharsets;
+
 public final class Client implements Runnable{
     private static String Host;
     private static int PORT;
-    private static Channel ch = null;
+    private static Connection connection;
 
-    public Client(String host, int port) {
+    public Client(String host, int port, Connection connection){
         this.Host = host;
         this.PORT = port;
+        this.connection = connection;
     }
 
     @Override
@@ -39,17 +45,17 @@ public final class Client implements Runnable{
                         @Override
                         public void initChannel(Channel ch){
                             ChannelPipeline pipeline=ch.pipeline();
-                            pipeline.addLast(new ProtobufVarint32FrameDecoder());
-                            pipeline.addLast(new ProtobufDecoder(MsgProtobuf.connection.getDefaultInstance()));
-                            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
-                            pipeline.addLast(new ProtobufEncoder());
+                            //往pipeline链中添加一个解码器
+                            pipeline.addLast("decoder",new StringDecoder());
+                            //往pipeline链中添加一个编码器
+                            pipeline.addLast("encoder",new StringEncoder());
                             pipeline.addLast(new ClientHandler());
                         }
                     });
-            ch= b.connect(Host, PORT).sync().channel();
+            Channel ch= b.connect(Host, PORT).sync().channel();
 
             ch.writeAndFlush(new DatagramPacket(
-                    Unpooled.copiedBuffer("Hello World", CharsetUtil.UTF_8),
+                    Unpooled.copiedBuffer(Byte.objectToBytes(connection)),
                     SocketUtils.socketAddress(Host, PORT))).sync();
 
         } catch (InterruptedException e) {
