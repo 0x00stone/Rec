@@ -125,7 +125,7 @@ public class KademliaId implements Serializable
     /** 获得两者间第一次不同到结尾的距离 **/
     public int getDistance(KademliaId to)
     {
-        return ID_LENGTH - this.xor(to).getFirstSetBitIndex();// 计算两者的异或,获得第一个不同的位置
+        return ID_LENGTH - xor(to).getFirstSetBitIndex();// 计算两者的异或,获得第一个不同的位置
     }
 
     @Override

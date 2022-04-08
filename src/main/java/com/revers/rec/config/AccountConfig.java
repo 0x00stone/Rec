@@ -13,7 +13,6 @@ public class AccountConfig {
     private static String username;
     private static String publicKey; //唯一身份
     private static String privateKey; //唯一身份
-    private static String nodeId; // 节点id
     private static Integer onlineTime; // 上线时间 从 1970-01-01 00:00:00 UTC 算起的秒数。
     @Value("${rec.config.listingHost}")
     private static String ipv6;
@@ -55,14 +54,6 @@ public class AccountConfig {
 
     public static void setPrivateKey(String privateKey) {
         AccountConfig.privateKey = privateKey;
-    }
-
-    public static String getNodeId() {
-        return nodeId;
-    }
-
-    public static void setNodeId(String nodeId) {
-        AccountConfig.nodeId = nodeId;
     }
 
     public static Integer getOnlineTime() {
@@ -112,7 +103,6 @@ public class AccountConfig {
                 ", username='" + username + '\'' +
                 ", publicKey='" + publicKey + '\'' +
                 ", privateKey='" + privateKey + '\'' +
-                ", nodeId='" + nodeId + '\'' +
                 ", onlineTime=" + onlineTime +
                 ", ipv6='" + ipv6 + '\'' +
                 ", ipv6Port='" + ipv6Port + '\'' +

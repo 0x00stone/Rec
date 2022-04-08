@@ -1,7 +1,6 @@
 package com.revers.rec.controller;
 
-import com.revers.rec.config.AccountConfig;
-import com.revers.rec.service.UserServiceImpl;
+import com.revers.rec.service.user.UserServiceImpl;
 import com.revers.rec.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

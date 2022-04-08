@@ -4,7 +4,7 @@ import com.revers.rec.RecApplication;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.User;
 import com.revers.rec.mapper.UserMapper;
-import com.revers.rec.service.UserServiceImpl;
+import com.revers.rec.service.user.UserServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

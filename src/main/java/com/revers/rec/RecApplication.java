@@ -2,18 +2,13 @@ package com.revers.rec;
 
 import com.revers.rec.cli.Login;
 import com.revers.rec.config.AccountConfig;
-import com.revers.rec.service.UserService;
-import com.revers.rec.service.UserServiceImpl;
 import com.revers.rec.util.BeanContext;
 import com.revers.rec.util.Network;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.support.CustomSQLErrorCodesTranslation;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication

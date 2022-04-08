@@ -1,7 +1,7 @@
 package com.revers.rec.cli;
 
 import com.revers.rec.config.AccountConfig;
-import com.revers.rec.service.UserServiceImpl;
+import com.revers.rec.service.user.UserServiceImpl;
 import com.revers.rec.util.BeanContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

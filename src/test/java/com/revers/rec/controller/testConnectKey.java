@@ -2,9 +2,7 @@ package com.revers.rec.controller;
 
 import com.revers.rec.RecApplication;
 import com.revers.rec.domain.ConnectKey;
-import com.revers.rec.service.ConnectKeyService;
-import com.revers.rec.service.ConnectKeyServiceImpl;
-import org.checkerframework.checker.units.qual.C;
+import com.revers.rec.service.connectKey.ConnectKeyServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
