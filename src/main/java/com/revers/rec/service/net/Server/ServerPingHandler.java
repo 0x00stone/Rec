@@ -2,27 +2,33 @@ package com.revers.rec.service.net.Server;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ServerPingHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
-    //TODO 两个handler之间的通信
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
-        System.out.println("Ping received");
-        log.info("ServerHandler.channelRead0收到消息");
         MsgProtobuf.connection connection = MsgProtobuf.connection.parseFrom(datagramPacket.content().nioBuffer());
-        System.out.println(channelHandlerContext.fireChannelRead(connection));
 
         if(connection != null){
-            System.out.println("监听到srcId:" + connection.getSrcId() + "的消息");
-            if(connection.getDestId() == AccountConfig.getId() && connection.getDestPublicKey() == AccountConfig.getPublicKey()){
-
+            if("ping".equals(connection.getData())){
+                log.info("ServerPingHandler收到ping消息");
+                channelHandlerContext.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
+                        "200", CharsetUtil.UTF_8),datagramPacket.sender()));
+            }else {
+                log.info("ServerPingHandler收到其他消息");
+                channelHandlerContext.fireChannelRead(datagramPacket);
             }
+        }else {
+            log.info("ServerPingHandler收到空消息");
+            channelHandlerContext.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
+                    "400", CharsetUtil.UTF_8),datagramPacket.sender()));
         }
-        channelHandlerContext.writeAndFlush(datagramPacket);
+
     }
 }
