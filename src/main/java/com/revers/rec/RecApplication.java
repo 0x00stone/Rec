@@ -20,8 +20,10 @@ public class RecApplication implements CommandLineRunner {
         ConfigurableApplicationContext run = SpringApplication.run(RecApplication.class, args);
         new BeanContext().setApplicationContext(run);;
 
-        Thread login = new Thread(new Login());
-        login.start();
+        /*Thread login = new Thread(new Login());
+        login.start();*/
+        Login login = new Login();
+        login.run();
     }
 
     @Override

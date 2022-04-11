@@ -3,20 +3,23 @@ package com.revers.rec.Kademlia.Bucket;
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.KeyComparator;
 import com.revers.rec.Kademlia.Node.Node;
+import com.revers.rec.config.AccountConfig;
+import com.revers.rec.controller.Server.Server;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
 
 public class RoutingTableImpl implements RoutingTable{
     public static final int k = 20; // 每个桶最大节点数
     public static final int p = 3; // 每次向其他node发送请求时,会向p个最近节点发送数据
 
-    private  Node localNode;
+    private Node localNode;
     private ArrayList<Bucket> list;
 
-    public RoutingTableImpl(Node localNode){
-        this.localNode = localNode;
+    public RoutingTableImpl(){
+        this.localNode = new Node(new KademliaId(AccountConfig.getId()),"127.0.0.1", Server.PORT,AccountConfig.getPublicKey());
         list = new ArrayList<>();
         initialize();
     }
@@ -28,13 +31,11 @@ public class RoutingTableImpl implements RoutingTable{
     }
 
     /** 根据距离插入一个节点**/
-    @Override
-    public synchronized void insert(Node n) {
-        this.list.get(this.localNode.getNodeId().getDistance(n.getNodeId())).insert(n);
+    public synchronized void insert(Node n) throws ExecutionException, InterruptedException {
+        list.get(localNode.getNodeId().getDistance(n.getNodeId())).insert(n);
     }
 
 
-    @Override
     public synchronized List<Node> findClosest(KademliaId target) {
         TreeSet<Node> sortedSet = new TreeSet<>(new KeyComparator(target));
         sortedSet.addAll(this.getAllNodes());

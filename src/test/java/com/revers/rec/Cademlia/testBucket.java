@@ -7,12 +7,13 @@ import com.revers.rec.Kademlia.Node.Node;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class testBucket {
     ArrayList<Bucket> list = new ArrayList<>();
 
     @Test
-    public void testBucket() {
+    public void testBucket() throws ExecutionException, InterruptedException {
         for (int i = 1; i<= 160; i++) {
             list.add(new BucketImpl(i));
         }

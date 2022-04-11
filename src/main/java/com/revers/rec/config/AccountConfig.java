@@ -14,12 +14,9 @@ public class AccountConfig {
     private static String publicKey; //唯一身份
     private static String privateKey; //唯一身份
     private static Integer onlineTime; // 上线时间 从 1970-01-01 00:00:00 UTC 算起的秒数。
-    @Value("${rec.config.listingHost}")
-    private static String ipv6;
+    private static String ipv6; //RecApplication 添加
     @Value("${rec.config.listingPort}")
-    private static Integer ipv6Port;
-/*    private static String ipv4;
-    private static String ipv4Port;*/
+    private static Integer ipv6Port; // 配置 添加
     private static boolean status; //状态, true 在线 , false 离线
 
     private static String aeskey; // 数据库加密用的key

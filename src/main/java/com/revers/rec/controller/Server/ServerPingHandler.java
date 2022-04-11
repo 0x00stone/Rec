@@ -1,6 +1,5 @@
-package com.revers.rec.service.net.Server;
+package com.revers.rec.controller.Server;
 
-import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -18,14 +17,17 @@ public class ServerPingHandler extends SimpleChannelInboundHandler<DatagramPacke
         if(connection != null){
             if("ping".equals(connection.getData())){
                 log.info("ServerPingHandler收到ping消息");
+                System.out.println("ServerPingHandler收到ping消息");
                 channelHandlerContext.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
                         "200", CharsetUtil.UTF_8),datagramPacket.sender()));
             }else {
                 log.info("ServerPingHandler收到其他消息");
+                System.out.println("ServerPingHandler收到其他消息");
                 channelHandlerContext.fireChannelRead(datagramPacket);
             }
         }else {
             log.info("ServerPingHandler收到空消息");
+            System.out.println("ServerPingHandler收到空消息");
             channelHandlerContext.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
                     "400", CharsetUtil.UTF_8),datagramPacket.sender()));
         }

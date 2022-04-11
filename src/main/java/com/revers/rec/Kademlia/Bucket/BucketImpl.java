@@ -1,11 +1,14 @@
 package com.revers.rec.Kademlia.Bucket;
 
 import com.revers.rec.Kademlia.Node.Node;
+import com.revers.rec.controller.Client.ClientOperation;
+import com.revers.rec.util.Result;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Getter
@@ -24,7 +27,7 @@ public class BucketImpl implements Bucket{
     }
 
     @Override
-    public synchronized void insert(Node n) {
+    public synchronized void insert(Node n) throws ExecutionException, InterruptedException {
         if(containsNode(n)){
             removeNode(n);
             bucket.add(n);
@@ -37,7 +40,17 @@ public class BucketImpl implements Bucket{
                 log.info("bucket" + this.getBucketId() + "插入第" +  this.getDepth() + "个节点");
 
             }else {
-                // TODO ping 第一个节点,ping通第一个节点放到最后,否则抛弃第一个节点,将n放入链
+                Result ping = ClientOperation.ping(bucket.getFirst().getInetAddress(), bucket.getFirst().getPort());
+                if(ping.getFlag()){
+                    Node first = bucket.getFirst();
+                    bucket.removeFirst();
+                    bucket.add(first);
+                    //成功
+                }else{
+                    bucket.removeFirst();
+                    bucket.add(n);
+                    //失败
+                }
             }
         }
     }

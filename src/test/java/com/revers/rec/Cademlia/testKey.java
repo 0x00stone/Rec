@@ -15,7 +15,7 @@ public class testKey {
         KademliaId id0 = new KademliaId("0000000000000000000000000000000000000000");
         KademliaId id1 = new KademliaId(new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,127});
         KademliaId id2 = new KademliaId(new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2});
-        KademliaId id3 = new KademliaId(new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3});
+        KademliaId id3 = new KademliaId(new byte[]{127,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3});
         KademliaId id4 = new KademliaId("ffffffffffffffffffffffffffffffffffffffff");
         System.out.println(id0.getDistance(id1));
         System.out.println(id0.getDistance(id2));

@@ -1,4 +1,4 @@
-package com.revers.rec.service.net.Client;
+package com.revers.rec.controller.Client;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Data;

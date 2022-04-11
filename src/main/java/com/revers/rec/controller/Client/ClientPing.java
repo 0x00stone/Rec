@@ -1,4 +1,4 @@
-package com.revers.rec.service.net.Client;
+package com.revers.rec.controller.Client;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
@@ -76,8 +76,8 @@ public final class ClientPing implements Callable<Result> {
             e.printStackTrace();
         }finally {
             group.shutdownGracefully();
-            return new Result(false, "发送失败");
         }
+        return new Result(false, "发送失败");
     }
 
 }
