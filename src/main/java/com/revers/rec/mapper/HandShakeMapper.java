@@ -16,7 +16,7 @@ import java.util.List;
 @Mapper
 public interface HandShakeMapper {
     @Insert("insert into handShake(id,type,publicKey,aesKey) values(#{id},#{type},#{publicKey},#{aesKey});")
-    public boolean createHandShake(HandShake handShake);
+    public boolean insertHandShake(HandShake handShake);
 
     @Select("select * from handShake where id = #{id};")
     public HandShake findById(String id);

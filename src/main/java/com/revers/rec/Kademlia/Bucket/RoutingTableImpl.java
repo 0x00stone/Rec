@@ -4,7 +4,8 @@ import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.KeyComparator;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
-import com.revers.rec.controller.Server.Server;
+import com.revers.rec.util.cypher.DigestUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
 @Component
+@Slf4j
 public class RoutingTableImpl implements RoutingTable{
     public static final int k = 20; // 每个桶最大节点数
     public static final int p = 2; // 每次向其他node发送请求时,会向p个最近节点发送数据
@@ -21,14 +23,24 @@ public class RoutingTableImpl implements RoutingTable{
     private ArrayList<Bucket> list = new ArrayList<>();
 
     {
-        for (int i = 1; i<= 160; i++) {
+        for (int i = 0; i<= 160; i++) {
             list.add(new BucketImpl(i));
         }
+
     }
 
     /** 根据距离插入一个节点**/
     public synchronized void insert(Node n) throws ExecutionException, InterruptedException {
+        if(localNode == null){
+            localNode = new Node(
+                    new KademliaId(DigestUtil.Sha1AndSha256(AccountConfig.getPublicKey())),
+                    AccountConfig.getIpv6(),
+                    AccountConfig.getIpv6Port(),
+                    AccountConfig.getPublicKey(),
+                    "AES");
+        }
         list.get(localNode.getNodeId().getDistance(n.getNodeId())).insert(n);
+
     }
 
 

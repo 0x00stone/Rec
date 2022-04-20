@@ -1,7 +1,7 @@
 package com.revers.rec.controller;
 
 import com.revers.rec.service.user.UserServiceImpl;
-import com.revers.rec.util.Result;
+import com.revers.rec.util.ResultUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,7 +32,7 @@ public class UserController {
             return new ModelAndView("error",data);
         }
 
-        Result flag = userService.register(username, password);
+        ResultUtil flag = userService.register(username, password);
         data.put("msg",flag.getMsg());
         if (flag.getFlag()) {
             return new ModelAndView("success",data);
@@ -51,7 +51,7 @@ public class UserController {
             return new ModelAndView("error",data);
         }
 
-        Result flag = userService.login(username,password);
+        ResultUtil flag = userService.login(username,password);
         data.put("msg",flag.getMsg());
         if (flag.getFlag()) {
             return new ModelAndView("success",data);

@@ -1,8 +1,8 @@
 package com.revers.rec.Kademlia.Bucket;
 
 import com.revers.rec.Kademlia.Node.Node;
-import com.revers.rec.controller.Client.ClientOperation;
-import com.revers.rec.util.Result;
+import com.revers.rec.net.Client.ClientOperation;
+import com.revers.rec.util.ResultUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,15 +32,15 @@ public class BucketImpl implements Bucket{
             removeNode(n);
             bucket.add(n);
             depth++;
-            log.info("bucket" + this.getBucketId() + "移除并插入第" +  this.getDepth() + "个节点");
+            log.info("bucket " + this.getBucketId() + " 移除并插入第 " +  this.getDepth() + " 个节点" + n.getNodeId());
         }else {
             if (depth < RoutingTableImpl.k) {
                 bucket.add(n);
                 depth++;
-                log.info("bucket" + this.getBucketId() + "插入第" +  this.getDepth() + "个节点");
+                log.info("bucket " + this.getBucketId() + " 插入第 " +  this.getDepth() + " 个节点" + n.getNodeId());
 
             }else {
-                Result ping = ClientOperation.ping(bucket.getFirst().getInetAddress(), bucket.getFirst().getPort());
+                ResultUtil ping = ClientOperation.ping(bucket.getFirst().getInetAddress(), bucket.getFirst().getPort());
                 if(ping.getFlag()){
                     Node first = bucket.getFirst();
                     bucket.removeFirst();
@@ -64,11 +64,11 @@ public class BucketImpl implements Bucket{
     public synchronized boolean removeNode(Node n) {
         if(bucket.contains(n)){
             bucket.remove(n);
-            log.info("bucket" + this.getBucketId() + "移除第" +  this.getDepth() + "个节点成功");
+            log.info("bucket " + this.getBucketId() + " 移除第 " +  this.getDepth() + " 个节点成功" + n.getNodeId());
             depth--;
             return true;
         }
-        log.info("bucket" + this.getBucketId() + "移除第" +  this.getDepth() + "个节点失败");
+        log.info("bucket " + this.getBucketId() + " 移除第 " +  this.getDepth() + " 个节点失败" + n.getNodeId());
         return false;
     }
 

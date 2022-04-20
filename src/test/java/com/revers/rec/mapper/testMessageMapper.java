@@ -34,7 +34,7 @@ public class testMessageMapper {
             statement = "select replace(uuid(), '-', '') as id from dual")
     public boolean createMessage(Message message);*/
     @Autowired
-    messageMapper messageMapper;
+    MessageMapper messageMapper;
     @Test
     public void testMessageMapper() {
         /*Message[] messages = new Message[100];
