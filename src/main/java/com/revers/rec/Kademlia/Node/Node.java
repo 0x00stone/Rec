@@ -14,15 +14,15 @@ public class Node implements Serializable
     private String inetAddress;
     private int port;
     private String publicKey;
-
     private String aesKey;
 
-    public Node(KademliaId nid, String ip, int port,String publicKey)
+    public Node(KademliaId nid, String ip, int port,String publicKey,String aesKey)
     {
         this.nodeId = nid;
         this.inetAddress = ip;
         this.port = port;
         this.publicKey = publicKey;
+        this.aesKey = aesKey;
     }
 
     @Override

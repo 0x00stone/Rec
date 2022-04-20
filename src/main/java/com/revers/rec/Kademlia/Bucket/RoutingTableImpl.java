@@ -5,26 +5,22 @@ import com.revers.rec.Kademlia.Node.KeyComparator;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.controller.Server.Server;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
+@Component
 public class RoutingTableImpl implements RoutingTable{
     public static final int k = 20; // 每个桶最大节点数
-    public static final int p = 3; // 每次向其他node发送请求时,会向p个最近节点发送数据
+    public static final int p = 2; // 每次向其他node发送请求时,会向p个最近节点发送数据
 
     private Node localNode;
-    private ArrayList<Bucket> list;
+    private ArrayList<Bucket> list = new ArrayList<>();
 
-    public RoutingTableImpl(){
-        this.localNode = new Node(new KademliaId(AccountConfig.getId()),"127.0.0.1", Server.PORT,AccountConfig.getPublicKey());
-        list = new ArrayList<>();
-        initialize();
-    }
-
-    public void initialize() {
+    {
         for (int i = 1; i<= 160; i++) {
             list.add(new BucketImpl(i));
         }
@@ -74,7 +70,7 @@ public class RoutingTableImpl implements RoutingTable{
         return this.list.toArray(new Bucket[0]);
     }
 
-    @Override
+/*    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("\nPrinting Routing Table Started ***************** \n");
         int totalContacts = 0;
@@ -97,5 +93,5 @@ public class RoutingTableImpl implements RoutingTable{
         sb.append("Printing Routing Table Ended ******************** ");
 
         return sb.toString();
-    }
+    }*/
 }

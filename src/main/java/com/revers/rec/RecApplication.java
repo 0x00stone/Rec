@@ -1,10 +1,13 @@
 package com.revers.rec;
 
+import com.revers.rec.Kademlia.Bucket.RoutingTable;
+import com.revers.rec.Kademlia.Bucket.RoutingTableImpl;
 import com.revers.rec.cli.Login;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.util.BeanContext;
 import com.revers.rec.util.Network;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -45,8 +48,5 @@ public class RecApplication implements CommandLineRunner {
         }else {
             log.info("获取本地ipv6地址失败");
         }
-
-
-
     }
 }

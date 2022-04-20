@@ -1,5 +1,6 @@
 package com.revers.rec.cli;
 
+import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Bucket.RoutingTableImpl;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.service.user.UserServiceImpl;
@@ -17,9 +18,21 @@ public class Login  {
     @Autowired
     UserServiceImpl userService;
 
+    @Autowired
+    RoutingTableImpl routingTableImpl;
+    @Autowired
+    RoutingTable routingTable;
+
     //预先加载用户(登录或注册)
     public void run(){
+
+        this.routingTable = BeanContext.getBean(RoutingTable.class);
+        this.routingTableImpl = BeanContext.getBean(RoutingTableImpl.class);
         this.userService = BeanContext.getBean(UserServiceImpl.class);
+        System.out.println("routingTablerun"+routingTable);
+        System.out.println("routingTableImplrun"+routingTableImpl);
+        System.out.println("userService"+userService);
+
         try {
             while (AccountConfig.getPublicKey() == null) {
                 System.out.println("选择登录还是注册:");

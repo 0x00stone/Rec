@@ -16,10 +16,8 @@ public class ClientOperation {
     }
 
     public static Result client(String ip, int port, String destId,String destPublicKey,Data data) throws ExecutionException, InterruptedException {
-        MsgProtobuf.connection connection = MsgProtobuf.connection.newBuilder()
+        MsgProtobuf.Connection connection = MsgProtobuf.Connection.newBuilder()
                 .setData(data.getData())
-                .setSrcId(AccountConfig.getId())
-                .setDestId(destId)
                 .setSrcPublicKey(AccountConfig.getPublicKey())
                 .setDestPublicKey(destPublicKey)
                 .build();

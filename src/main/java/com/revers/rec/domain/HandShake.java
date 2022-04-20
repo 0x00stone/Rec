@@ -13,5 +13,7 @@ public class HandShake {
     private String id;
     private Integer type;
     private String publicKey;
-    private String AesKey;
+    private String aesKey;
+    private Integer order;
+
 }

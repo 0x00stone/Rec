@@ -10,12 +10,8 @@ import org.springframework.stereotype.Component;
 @Setter
 @ToString
 public class Data {
-    private String srcId;
-    private String destId;
     private String srcPublicKey;
     private String destPublicKey;
-    private String orderId;
-    private int msgType;
     private String data;
     private String signature;
     private String timeStamp;
