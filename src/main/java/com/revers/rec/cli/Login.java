@@ -4,7 +4,7 @@ import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Bucket.RoutingTableImpl;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.service.user.UserServiceImpl;
-import com.revers.rec.util.BeanContext;
+import com.revers.rec.util.BeanContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,9 +26,9 @@ public class Login  {
     //预先加载用户(登录或注册)
     public void run(){
 
-        this.routingTable = BeanContext.getBean(RoutingTable.class);
-        this.routingTableImpl = BeanContext.getBean(RoutingTableImpl.class);
-        this.userService = BeanContext.getBean(UserServiceImpl.class);
+        this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
+        this.routingTableImpl = BeanContextUtil.getBean(RoutingTableImpl.class);
+        this.userService = BeanContextUtil.getBean(UserServiceImpl.class);
         System.out.println("routingTablerun"+routingTable);
         System.out.println("routingTableImplrun"+routingTableImpl);
         System.out.println("userService"+userService);

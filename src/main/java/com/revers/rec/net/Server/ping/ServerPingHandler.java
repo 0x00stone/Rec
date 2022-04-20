@@ -1,20 +1,15 @@
 package com.revers.rec.net.Server.ping;
 
-import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.domain.protobuf.MsgProtobuf.Connection;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.cypher.Md5;
-import com.revers.rec.util.cypher.Rsa;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
-import java.util.Random;
 
 /**  处理ping消息 **/
 @Slf4j

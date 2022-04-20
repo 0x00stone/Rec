@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Map;
 import java.util.concurrent.*;
 
-import static com.revers.rec.util.cypher.Rsa.createKeys;
+import static com.revers.rec.util.cypher.RsaUtil.createKeys;
 
 
 @RunWith(SpringRunner.class)

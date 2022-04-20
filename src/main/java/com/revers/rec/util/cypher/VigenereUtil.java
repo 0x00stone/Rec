@@ -1,6 +1,6 @@
 package com.revers.rec.util.cypher;
 
-public class Vigenere {
+public class VigenereUtil {
     //声明并初始化一个String将字母与数字对应表内容存起来
     public static String word = "abcdefghijklmnopqrstuvwxyz1234567890";
 

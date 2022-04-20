@@ -1,10 +1,8 @@
 package com.revers.rec.net.Client.ping;
 
-import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
-import com.revers.rec.net.Client.ClientHandler;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.Result;
+import com.revers.rec.util.ResultUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -21,7 +19,7 @@ import io.netty.util.internal.SocketUtils;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-public final class ClientPing implements Callable<Result> {
+public final class ClientPing implements Callable<ResultUtil> {
     private static MsgProtobuf.Connection connection;
     private String HOST;
     private int PORT;
@@ -38,7 +36,7 @@ public final class ClientPing implements Callable<Result> {
     }
 
     @Override
-    public Result call() {
+    public ResultUtil call() {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -65,7 +63,7 @@ public final class ClientPing implements Callable<Result> {
 
             if(!ch.closeFuture().await(15000)){
                 System.out.println("Time Out");
-                return new Result(false,"Time Out");
+                return new ResultUtil(false,"Time Out");
             }
             while (ch.attr(AttributeKey.valueOf("data")).get() == null){}
             boolean isPingSuccess = false;
@@ -77,16 +75,16 @@ public final class ClientPing implements Callable<Result> {
                 }
             }
             if(isPingSuccess){
-                return new Result(true, "Ping成功");
+                return new ResultUtil(true, "Ping成功");
             }else {
-                return new Result(false, "Ping失败");
+                return new ResultUtil(false, "Ping失败");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();
         }
-        return new Result(false, "发送失败");
+        return new ResultUtil(false, "发送失败");
     }
 
 }

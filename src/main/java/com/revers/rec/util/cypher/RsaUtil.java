@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 
-public class Rsa {
+public class RsaUtil {
     public static final String CHARSET = "UTF-8";
     public static final String RSA_ALGORITHM = "RSA"; // ALGORITHM ['ælgərɪð(ə)m] 算法的意思
 

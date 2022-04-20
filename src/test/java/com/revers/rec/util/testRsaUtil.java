@@ -6,9 +6,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
 
-import static com.revers.rec.util.cypher.Rsa.*;
+import static com.revers.rec.util.cypher.RsaUtil.*;
 
-public class testRsa {
+public class testRsaUtil {
     @Test
     public void testRsa() throws NoSuchAlgorithmException, InvalidKeySpecException {
         Map<String, String> keyMap = createKeys(4096);

@@ -1,13 +1,10 @@
 package com.revers.rec;
 
-import com.revers.rec.Kademlia.Bucket.RoutingTable;
-import com.revers.rec.Kademlia.Bucket.RoutingTableImpl;
 import com.revers.rec.cli.Login;
 import com.revers.rec.config.AccountConfig;
-import com.revers.rec.util.BeanContext;
-import com.revers.rec.util.Network;
+import com.revers.rec.util.BeanContextUtil;
+import com.revers.rec.util.NetworkUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +18,7 @@ public class RecApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(RecApplication.class, args);
-        new BeanContext().setApplicationContext(run);;
+        new BeanContextUtil().setApplicationContext(run);;
 
         /*Thread login = new Thread(new Login());
         login.start();*/
@@ -36,7 +33,7 @@ public class RecApplication implements CommandLineRunner {
 
         String localIPv6Address = null;
         try {
-            localIPv6Address = Network.getLocalIPv6Address();
+            localIPv6Address = NetworkUtil.getLocalIPv6Address();
         } catch (Exception e) {
             log.info("获取本地ip地址异常");
             return;

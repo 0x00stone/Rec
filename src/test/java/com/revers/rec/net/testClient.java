@@ -4,7 +4,7 @@ import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.RecApplication;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.net.Client.ClientOperation;
-import com.revers.rec.util.Result;
+import com.revers.rec.util.ResultUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import static com.revers.rec.util.cypher.Rsa.createKeys;
+import static com.revers.rec.util.cypher.RsaUtil.createKeys;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = RecApplication.class)
@@ -25,7 +25,7 @@ public class testClient {
 
     @Test
     public void testPing() throws ExecutionException, InterruptedException {
-        Result ping = ClientOperation.ping("127.0.0.1", 30000);
+        ResultUtil ping = ClientOperation.ping("127.0.0.1", 30000);
         System.out.println(ping.getFlag());
         System.out.println(ping.getMsg());
         System.out.println(ping.getData());
@@ -42,7 +42,7 @@ public class testClient {
         AccountConfig.setIpv6("127.0.0.2");
         AccountConfig.setIpv6Port(30000);
 
-        Result handshake = ClientOperation.handShake("127.0.0.1",30000);
+        ResultUtil handshake = ClientOperation.handShake("127.0.0.1",30000);
         System.out.println(handshake.getFlag());
         System.out.println(handshake.getMsg());
         System.out.println(handshake.getData());

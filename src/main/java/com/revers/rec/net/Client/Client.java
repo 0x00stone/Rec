@@ -1,7 +1,7 @@
 package com.revers.rec.net.Client;
 
 import com.revers.rec.domain.protobuf.MsgProtobuf;
-import com.revers.rec.util.Result;
+import com.revers.rec.util.ResultUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -17,7 +17,7 @@ import io.netty.util.internal.SocketUtils;
 
 import java.util.concurrent.Callable;
 
-public final class Client implements Callable<Result> {
+public final class Client implements Callable<ResultUtil> {
     private static String Host;
     private static int PORT;
     private static MsgProtobuf.Connection connection;
@@ -29,7 +29,7 @@ public final class Client implements Callable<Result> {
     }
 
     @Override
-    public Result call() {
+    public ResultUtil call() {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -55,14 +55,14 @@ public final class Client implements Callable<Result> {
             System.out.println("已发送");;
             if(!ch.closeFuture().await(15000)){
                 System.out.println("发送超时");
-                return new Result(false,"发送超时");
+                return new ResultUtil(false,"发送超时");
             }
             while (ch.attr(AttributeKey.valueOf("result")).get() == null){}
             if("201".equals(ch.attr(AttributeKey.valueOf("result")).get())){
-                return new Result(true, "发送失败");
+                return new ResultUtil(true, "发送失败");
             }
             if ("401".equals(ch.attr(AttributeKey.valueOf("result")).get())){
-                return new Result(false, "发送失败");
+                return new ResultUtil(false, "发送失败");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -70,7 +70,7 @@ public final class Client implements Callable<Result> {
             e.printStackTrace();
         }finally {
             group.shutdownGracefully();
-            return new Result(false, "发送失败");
+            return new ResultUtil(false, "发送失败");
         }
     }
 

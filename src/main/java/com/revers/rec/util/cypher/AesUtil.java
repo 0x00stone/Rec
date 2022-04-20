@@ -6,7 +6,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class Aes {
+public class AesUtil {
     public static String getAseKey(int size) throws NoSuchAlgorithmException {
         KeyGenerator key = KeyGenerator.getInstance("AES");
         key.init(size , new SecureRandom());

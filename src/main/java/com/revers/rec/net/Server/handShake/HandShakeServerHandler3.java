@@ -5,15 +5,14 @@ import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
-import com.revers.rec.util.BeanContext;
+import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.cypher.Aes;
+import com.revers.rec.util.cypher.AesUtil;
 import com.revers.rec.util.cypher.DigestUtil;
-import com.revers.rec.util.cypher.Rsa;
+import com.revers.rec.util.cypher.RsaUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.AttributeKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +33,17 @@ public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
         DatagramPacket datagramPacket = (DatagramPacket) map.get("datagramPacket");
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_HANDSHAKE_3){
             String publicKey = (String)ctx.attr(AttributeKey.valueOf("publicKey")).get();
-            String AES = Rsa.privateDecrypt(connection.getData(),AccountConfig.getPrivateKey());
+            String AES = RsaUtil.privateDecrypt(connection.getData(),AccountConfig.getPrivateKey());
             ctx.attr(AttributeKey.valueOf("aes")).set(AES);
 
-            this.routingTable = BeanContext.getBean(RoutingTable.class);
+            this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
             routingTable.insert(new Node(new KademliaId(DigestUtil.Sha1AndSha256(publicKey)),connection.getIpv6(),
                     Integer.valueOf(connection.getPort()),publicKey,AES  ));
 
             MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
                     .setOrder(connection.getOrder()+1)
                     .setMsgType(ConstantUtil.MSGTYPE_HANDSHAKE_4)
-                    .setData(Aes.encrypt(AES,"success"))
+                    .setData(AesUtil.encrypt(AES,"success"))
                     .setIpv6(AccountConfig.getIpv6())
                     .setPort(String.valueOf(AccountConfig.getIpv6Port()))
                     .build();

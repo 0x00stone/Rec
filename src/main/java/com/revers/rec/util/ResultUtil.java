@@ -1,25 +1,25 @@
 package com.revers.rec.util;
-public class Result {
+public class ResultUtil {
     private boolean flag ;
     private String msg = "success";
     private Object data;
 
-    public Result(boolean flag, String msg, Object data) {
+    public ResultUtil(boolean flag, String msg, Object data) {
         this.flag = flag;
         this.msg = msg;
         this.data = data;
     }
 
-    public Result(boolean flag, String msg) {
+    public ResultUtil(boolean flag, String msg) {
         this.flag = flag;
         this.msg = msg;
     }
 
-    public Result(Object data) {
+    public ResultUtil(Object data) {
         this.data = data;
     }
 
-    public Result(){};
+    public ResultUtil(){};
 
     public boolean getFlag() {
         return flag;

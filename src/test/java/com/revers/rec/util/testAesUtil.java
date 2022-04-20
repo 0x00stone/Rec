@@ -8,12 +8,12 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import static com.revers.rec.util.cypher.Aes.*;
-import static com.revers.rec.util.cypher.Sha256.getSHA256;
-import static com.revers.rec.util.cypher.Vigenere.deVigenere;
-import static com.revers.rec.util.cypher.Vigenere.enVigenere;
+import static com.revers.rec.util.cypher.AesUtil.*;
+import static com.revers.rec.util.cypher.Sha256Util.getSHA256;
+import static com.revers.rec.util.cypher.VigenereUtil.deVigenere;
+import static com.revers.rec.util.cypher.VigenereUtil.enVigenere;
 
-public class testAes {
+public class testAesUtil {
 
     @Test
     public void testAes() throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {

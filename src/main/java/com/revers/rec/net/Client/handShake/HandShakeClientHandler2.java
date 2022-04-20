@@ -3,11 +3,10 @@ package com.revers.rec.net.Client.handShake;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.cypher.Aes;
-import com.revers.rec.util.cypher.Rsa;
+import com.revers.rec.util.cypher.AesUtil;
+import com.revers.rec.util.cypher.RsaUtil;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.AttributeKey;
@@ -31,13 +30,13 @@ public class HandShakeClientHandler2 extends SimpleChannelInboundHandler<Datagra
         }
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_HANDSHAKE_2){
             channelHandlerContext.attr(AttributeKey.valueOf("publicKey")).set(connection.getData());
-            String AES = Aes.getAseKey(256);
+            String AES = AesUtil.getAseKey(256);
             channelHandlerContext.attr(AttributeKey.valueOf("aes")).set(AES);
 
             MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
                     .setOrder(connection.getOrder()+1)
                     .setMsgType(ConstantUtil.MSGTYPE_HANDSHAKE_3)
-                    .setData(Rsa.publicEncrypt(AES,connection.getData()))
+                    .setData(RsaUtil.publicEncrypt(AES,connection.getData()))
                     .setIpv6(AccountConfig.getIpv6())
                     .setPort(String.valueOf(AccountConfig.getIpv6Port()))
                     .build();

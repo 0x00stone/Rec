@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 @Mapper
-public interface messageMapper {
+public interface MessageMapper {
     @Delete("delete from message where messageId = #{messageId};")
     public void deleteUser(Integer messageId);
 

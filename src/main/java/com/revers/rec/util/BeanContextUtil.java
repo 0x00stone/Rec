@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public final class BeanContext implements ApplicationContextAware {
+public final class BeanContextUtil implements ApplicationContextAware {
 
     private static ApplicationContext context;
 

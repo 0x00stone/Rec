@@ -2,12 +2,8 @@ package com.revers.rec.net.Client.handShake;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
-import com.revers.rec.service.net.Session;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.Result;
-import com.revers.rec.util.cypher.Aes;
-import com.revers.rec.util.cypher.DigestUtil;
-import com.revers.rec.util.cypher.Rsa;
+import com.revers.rec.util.ResultUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -20,7 +16,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.SocketUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
@@ -31,14 +26,10 @@ import java.util.concurrent.Callable;
  * @date 2022/04/19 22:59
  **/
 
-public class HandShakeClient implements Callable<Result> {
+public class HandShakeClient implements Callable<ResultUtil> {
     private MsgProtobuf.Connection connection;
     private String HOST;
     private Integer PORT;
-
-
-    @Autowired
-    Session session;
 
     public HandShakeClient(String host, int port) throws NoSuchAlgorithmException {
         this.HOST = host;
@@ -51,7 +42,7 @@ public class HandShakeClient implements Callable<Result> {
     }
 
     @Override
-    public Result call() throws Exception {
+    public ResultUtil call() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -77,12 +68,12 @@ public class HandShakeClient implements Callable<Result> {
             System.out.println("已发送");
 
             if(!ch.closeFuture().await(15000)){
-                return new Result(false,"Time Out");
+                return new ResultUtil(false,"Time Out");
             }
             while (ch.attr(AttributeKey.valueOf("isSuccess")).get() == null){}
 
             if((boolean)ch.attr(AttributeKey.valueOf("isSuccess")).get() == true){
-                return new Result(true,"连接成功");
+                return new ResultUtil(true,"连接成功");
 
             }
         } catch (InterruptedException e) {
@@ -92,6 +83,6 @@ public class HandShakeClient implements Callable<Result> {
         }finally {
             group.shutdownGracefully();
         }
-        return new Result(false, "连接失败");
+        return new ResultUtil(false, "连接失败");
     }
 }
