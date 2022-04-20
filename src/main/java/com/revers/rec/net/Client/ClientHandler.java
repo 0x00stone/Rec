@@ -1,4 +1,4 @@
-package com.revers.rec.controller.Client;
+package com.revers.rec.net.Client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

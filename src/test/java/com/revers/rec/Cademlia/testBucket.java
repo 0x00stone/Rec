@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 public class testBucket {
     ArrayList<Bucket> list = new ArrayList<>();
 
-    @Test
+    /*@Test
     public void testBucket() throws ExecutionException, InterruptedException {
         for (int i = 1; i<= 160; i++) {
             list.add(new BucketImpl(i));
@@ -26,5 +26,5 @@ public class testBucket {
         list.get(1).insert(new Node(new KademliaId("0000000000000000000000000000000000000001"),"127.0.0.1",123,"key"));
         System.out.println(list.get(1).getDepth());
 
-    }
+    }*/
 }

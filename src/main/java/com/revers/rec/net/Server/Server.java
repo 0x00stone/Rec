@@ -1,6 +1,9 @@
-package com.revers.rec.controller.Server;
+package com.revers.rec.net.Server;
 
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.net.Server.handShake.HandShakeServerHandler1;
+import com.revers.rec.net.Server.handShake.HandShakeServerHandler3;
+import com.revers.rec.net.Server.ping.ServerPingHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -12,12 +15,8 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
 import java.util.concurrent.Callable;
 
-/**
- * @author Revers.
- * @date 2022/04/19 23:00
- **/
-public class HandShakeServer implements Callable<Boolean> {
-    public static final int PORT = 29999;//握手端口
+public class Server implements Callable<Boolean> {
+    public static final int PORT = 30000;
 
 
 
@@ -28,7 +27,6 @@ public class HandShakeServer implements Callable<Boolean> {
             Bootstrap b = new Bootstrap()
                     .group(group)
                     .channel(NioDatagramChannel.class)
-                    .option(ChannelOption.SO_KEEPALIVE, false)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         public void initChannel(Channel ch){
@@ -38,11 +36,8 @@ public class HandShakeServer implements Callable<Boolean> {
                             pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
                             pipeline.addFirst(new ProtobufEncoder());
                             pipeline.addLast(new ServerPingHandler());
-                            pipeline.addLast(new ServerHandShakeType1Handler());
-                            pipeline.addLast(new ServerHandShakeType2Handler());
-                            pipeline.addLast(new ServerHandShakeType3Handler());
-                            pipeline.addLast(new ServerHandShakeType4Handler());
-                            pipeline.addLast(new ServerDataHandler());
+                            pipeline.addLast(new HandShakeServerHandler1());
+                            pipeline.addLast(new HandShakeServerHandler3());
                         }
                     });
 

@@ -6,6 +6,6 @@ import java.util.HashMap;
 
 @Service
 public class Session {
-    public HashMap<String,Object[]> handShakeSession = new HashMap<>(); //<id,[type,publicKey,AESKEY,order]>
+    public static HashMap<String,Object[]> handShakeSession = new HashMap<>(); //<id,[type,publicKey,AESKEY,order]>
 
 }

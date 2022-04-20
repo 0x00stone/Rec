@@ -1,16 +1,25 @@
-package com.revers.rec.controller.Client;
+package com.revers.rec.net.Client;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.net.Client.handShake.HandShakeClient;
+import com.revers.rec.net.Client.ping.ClientPing;
 import com.revers.rec.util.Result;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 public class ClientOperation {
     public static Result ping(String ip, int port) throws ExecutionException, InterruptedException {
         FutureTask<Result> futureTask = new FutureTask<Result>(new ClientPing(ip,port));
+        futureTask.run();
+        return futureTask.get();
+    }
+
+    public static Result handShake(String ip,int port) throws NoSuchAlgorithmException, ExecutionException, InterruptedException {
+        FutureTask<Result> futureTask = new FutureTask<Result>(new HandShakeClient(ip,port));
         futureTask.run();
         return futureTask.get();
     }

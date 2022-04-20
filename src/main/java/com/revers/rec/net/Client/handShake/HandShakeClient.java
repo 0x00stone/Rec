@@ -1,8 +1,9 @@
-package com.revers.rec.controller.Client;
+package com.revers.rec.net.Client.handShake;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.service.net.Session;
+import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.Result;
 import com.revers.rec.util.cypher.Aes;
 import com.revers.rec.util.cypher.DigestUtil;
@@ -20,7 +21,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.SocketUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
@@ -31,39 +31,32 @@ import java.util.concurrent.Callable;
  * @date 2022/04/19 22:59
  **/
 
-
 public class HandShakeClient implements Callable<Result> {
     private MsgProtobuf.Connection connection;
-    private String AES;
+    private String HOST;
+    private Integer PORT;
 
 
     @Autowired
     Session session;
 
-    public HandShakeClient(String host, int port,String destPublicKey) throws NoSuchAlgorithmException {
-        AES = Aes.getAseKey(256);
+    public HandShakeClient(String host, int port) throws NoSuchAlgorithmException {
+        this.HOST = host;
+        this.PORT = port;
         this.connection = MsgProtobuf.Connection.newBuilder()
-                .setSrcPublicKey(AccountConfig.getPublicKey())
-                .setDestPublicKey(destPublicKey)
-                .setPort(String.valueOf(port))
-                .setIpv6(host)
+                .setMsgType(ConstantUtil.MSGTYPE_HANDSHAKE_1)
                 .setOrder(new Random().nextLong())
-                .setMsgType(1)
-                .setSignature("")
-                .setTimestamp(0)
-                .setData(AES)
+                .setData(AccountConfig.getPublicKey())
                 .build();
     }
 
     @Override
     public Result call() throws Exception {
-        int flag = -1; //标志是否握手成功 // -1 初始值 // 0 失败 // 1 成功
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
                     .group(group)
                     .channel(NioDatagramChannel.class)
-                    .option(ChannelOption.SO_KEEPALIVE, false)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         public void initChannel(Channel ch){
@@ -76,18 +69,21 @@ public class HandShakeClient implements Callable<Result> {
                             pipeline.addLast(new HandShakeClientHandler4());
                         }
                     });
-            Channel ch= b.connect(connection.getIpv6(),Integer.valueOf(connection.getPort())).sync().channel();
+            Channel ch= b.connect(HOST,PORT).sync().channel();
 
             ch.writeAndFlush(new DatagramPacket(
                     Unpooled.copiedBuffer(connection.toByteArray()),
-                    SocketUtils.socketAddress(connection.getIpv6(),Integer.valueOf(connection.getPort())))).sync();
+                    SocketUtils.socketAddress(HOST,PORT))).sync();
             System.out.println("已发送");
-            while (ch.attr(AttributeKey.valueOf("result")).get() == null){}
-            if("201".equals(ch.attr(AttributeKey.valueOf("result")).get())){
-                return new Result(true, "发送失败");
+
+            if(!ch.closeFuture().await(15000)){
+                return new Result(false,"Time Out");
             }
-            if ("401".equals(ch.attr(AttributeKey.valueOf("result")).get())){
-                return new Result(false, "发送失败");
+            while (ch.attr(AttributeKey.valueOf("isSuccess")).get() == null){}
+
+            if((boolean)ch.attr(AttributeKey.valueOf("isSuccess")).get() == true){
+                return new Result(true,"连接成功");
+
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -95,16 +91,7 @@ public class HandShakeClient implements Callable<Result> {
             e.printStackTrace();
         }finally {
             group.shutdownGracefully();
-            if(flag == 1){
-                System.out.println("握手成功");
-                String Aes = Rsa.privateDecrypt(connection.getData(), AccountConfig.getPrivateKey());
-                Object[] objects = new Object[3];
-                objects[0] = connection.getMsgType();
-                objects[1] = connection.getDestPublicKey();
-                objects[2] = AES;
-                session.handShakeSession.put(DigestUtil.Sha1AndSha256(connection.getDestPublicKey()),objects);
-            }
-            return new Result(false, "发送失败");
         }
+        return new Result(false, "连接失败");
     }
 }

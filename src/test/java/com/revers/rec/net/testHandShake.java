@@ -1,4 +1,4 @@
-package com.revers.rec.controller.net;
+package com.revers.rec.net;
 
 import org.junit.Test;
 
