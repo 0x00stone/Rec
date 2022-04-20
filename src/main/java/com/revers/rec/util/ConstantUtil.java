@@ -13,6 +13,9 @@ public class ConstantUtil {
     public static final Integer MSGTYPE_HANDSHAKE_3 = 4;
     public static final Integer MSGTYPE_HANDSHAKE_4 = 5;
 
+    //ClientCommunicate
+    public static final Integer MSGTYPE_COMMUNICATE = 6;
+
 
 
 
