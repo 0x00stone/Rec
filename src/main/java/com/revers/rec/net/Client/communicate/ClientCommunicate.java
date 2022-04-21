@@ -43,34 +43,28 @@ import java.util.concurrent.Callable;
  * @author Revers.
  * @date 2022/04/20 22:22
  **/
-public class ClientCommunicate implements Callable<ResultUtil> {
+public class ClientCommunicate implements Callable<Data> {
     @Autowired
     private RoutingTable routingTable;
 
-    private ArrayList<Object[]> toNodeList = null; //[MsgProtobuf.Connection[] connection,String HOST,int PORT]
+    private ArrayList<Object[]> toNodeList = null; //[MsgProtobuf.Connection[] connection,String HOST,int PORT,Integer order,String aes]
 
-    public ClientCommunicate(String destPublicKey, String content) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public ClientCommunicate(Data data) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         toNodeList = new ArrayList<>();
         this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
 
-        Data data = new Data();
-        data.setSrcPublicKey(AccountConfig.getPublicKey());
-        data.setDestPublicKey(destPublicKey);
-        data.setData(RsaUtil.publicEncrypt(destPublicKey,content));
-        data.setSignature(Sha256Util.getSHA256(data.getData()));
-        data.setTimeStamp(String.valueOf(System.currentTimeMillis()));
         String dataString = JSON.toJSONString(data);
 
-        for(Node toNode : routingTable.findClosest(new  KademliaId(DigestUtil.Sha1AndSha256(destPublicKey)))){
-            Object[] objects = new Object[3];
+        for(Node toNode : routingTable.findClosest(new  KademliaId(DigestUtil.Sha1AndSha256(data.getDestPublicKey())))){
+            Object[] objects = new Object[5];
             String aes = toNode.getAesKey();
 
 
-
+            Long order = new Random().nextLong();
             MsgProtobuf.Connection connection = MsgProtobuf.Connection.newBuilder()
-                    .setSrcPublicKey(AccountConfig.getPublicKey())
+                    .setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(),toNode.getPublicKey()))
                     .setDestPublicKey(toNode.getPublicKey())
-                    .setOrder(new Random().nextLong())
+                    .setOrder(order)
                     .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
                     .setSignature(RsaUtil.privateEncrypt(Sha256Util.getSHA256(dataString),AccountConfig.getPrivateKey()))
                     .setTimestamp(System.currentTimeMillis())
@@ -80,13 +74,15 @@ public class ClientCommunicate implements Callable<ResultUtil> {
             objects[0] = connection;
             objects[1] = toNode.getInetAddress();
             objects[2] = toNode.getPort();
+            objects[3] = order;
+            objects[4] = aes;
 
             toNodeList.add(objects);
         }
     }
-//TODO 数据通信的client 和 server
+
     @Override
-    public ResultUtil call() {
+    public Data call() {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -101,39 +97,43 @@ public class ClientCommunicate implements Callable<ResultUtil> {
                             pipeline.addFirst(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
                             pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
                             pipeline.addFirst(new ProtobufEncoder());
-                            pipeline.addLast(new ClientPingHandler());
+                            pipeline.addLast(new ClientCommunicateHandler());
                         }
                     });
-            Channel ch= b.connect(HOST,PORT).sync().channel();
 
-            ch.writeAndFlush(new DatagramPacket(
-                    Unpooled.copiedBuffer(connection.toByteArray()),
-                    SocketUtils.socketAddress(HOST,PORT))).sync();
-            System.out.println("已发送Ping消息");
+            Channel[] channels = new Channel[toNodeList.size()];
+            int i = 0;
+            for(Object[] objects : toNodeList) {
+                channels[i] = b.connect((String) objects[1], (Integer) objects[2]).sync().channel();
 
-            if(!ch.closeFuture().await(150000)){
-                System.out.println("Time Out");
-                return new ResultUtil(false,"Time Out");
+                channels[i].writeAndFlush(new DatagramPacket(
+                        Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
+                        SocketUtils.socketAddress((String) objects[1], (Integer) objects[2]))).sync();
+                System.out.println("已向 " + i +" 通道发送数据包");
+
+                channels[i].attr(AttributeKey.valueOf("orderOrigin")).set(objects[3]);
+                channels[i].attr(AttributeKey.valueOf("aes")).set(objects[4]);
+                ++i;
             }
-            while (ch.attr(AttributeKey.valueOf("data")).get() == null){}
-            boolean isPingSuccess = false;
-            if(ch.attr(AttributeKey.valueOf("msgType")).get() == ConstantUtil.MSGTYPE_PING_RESPONSE){
-                if((Long)ch.attr(AttributeKey.valueOf("order")).get() == connection.getOrder()+1){
-                    if(ConstantUtil.PING_SUCCESS.equals(ch.attr(AttributeKey.valueOf("data")).get()) ){
-                        isPingSuccess = true;
-                    }
+
+            for(int j = 0 ; j < i ; j++){
+                if(!channels[j].closeFuture().await(150000)){
+                    System.out.println(j + " Channel Time Out");
+                    channels[j].close();
+                    continue;
+                }
+
+                if(channels[j].attr(AttributeKey.valueOf("data")).get() != null){
+                    return (Data) channels[j].attr(AttributeKey.valueOf("data")).get();
                 }
             }
-            if(isPingSuccess){
-                return new ResultUtil(true, "Ping成功");
-            }else {
-                return new ResultUtil(false, "Ping失败");
-            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();
+            return null;
         }
-        return new ResultUtil(false, "发送失败");
+
     }
 }

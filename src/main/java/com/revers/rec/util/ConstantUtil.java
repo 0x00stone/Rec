@@ -14,7 +14,10 @@ public class ConstantUtil {
     public static final Integer MSGTYPE_HANDSHAKE_4 = 5;
 
     //ClientCommunicate
+    public static final String COMMUNICATE_SUCCESS = "060";
+    public static final String COMMUNICATE_FAILURE = "061";
     public static final Integer MSGTYPE_COMMUNICATE = 6;
+
 
 
 

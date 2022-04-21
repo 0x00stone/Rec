@@ -1,6 +1,7 @@
 package com.revers.rec.net.Server;
 
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.net.Server.communicate.ServerCommunicateHandler;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler1;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler3;
 import com.revers.rec.net.Server.ping.ServerPingHandler;
@@ -38,6 +39,7 @@ public class Server implements Callable<Boolean> {
                             pipeline.addLast(new ServerPingHandler());
                             pipeline.addLast(new HandShakeServerHandler1());
                             pipeline.addLast(new HandShakeServerHandler3());
+                            pipeline.addLast(new ServerCommunicateHandler());
                         }
                     });
 

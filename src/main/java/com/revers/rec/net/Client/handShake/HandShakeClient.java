@@ -74,7 +74,6 @@ public class HandShakeClient implements Callable<ResultUtil> {
 
             if((boolean)ch.attr(AttributeKey.valueOf("isSuccess")).get() == true){
                 return new ResultUtil(true,"连接成功");
-
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

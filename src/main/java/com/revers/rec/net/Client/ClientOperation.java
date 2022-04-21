@@ -3,10 +3,17 @@ package com.revers.rec.net.Client;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.net.Client.communicate.ClientCommunicate;
 import com.revers.rec.net.Client.handShake.HandShakeClient;
 import com.revers.rec.net.Client.ping.ClientPing;
 import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.cypher.RsaUtil;
+import com.revers.rec.util.cypher.Sha256Util;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -24,16 +31,23 @@ public class ClientOperation {
         return futureTask.get();
     }
 
-    public static ResultUtil client(String ip, int port, String destId, String destPublicKey, Data data) throws ExecutionException, InterruptedException {
-        MsgProtobuf.Connection connection = MsgProtobuf.Connection.newBuilder()
-                .setData(data.getData())
-                .setSrcPublicKey(AccountConfig.getPublicKey())
-                .setDestPublicKey(destPublicKey)
-                .build();
+    public static ResultUtil communicate(String destPublicKey,String content) throws ExecutionException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        Data data = new Data();
+        data.setSrcPublicKey(AccountConfig.getPublicKey());
+        data.setDestPublicKey(destPublicKey);
+        data.setData(RsaUtil.publicEncrypt(content,destPublicKey));
+        data.setSignature(Sha256Util.getSHA256(data.getData()));
+        data.setTimeStamp(String.valueOf(System.currentTimeMillis()));
 
+        Data communicate = communicate(data);
+        //TODO: check signature
+        return new ResultUtil(true,null,communicate);
+    }
 
-        FutureTask<ResultUtil> futureTask = new FutureTask<ResultUtil>(new Client(ip,port,connection));
+    public static Data communicate(Data data) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ExecutionException, InterruptedException {
+        FutureTask<Data> futureTask = new FutureTask<Data>(new ClientCommunicate(data));
         futureTask.run();
         return futureTask.get();
     }
+
 }

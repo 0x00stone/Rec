@@ -9,8 +9,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+@PropertySource(encoding = "UTF-8", value = {"classpath:application.properties"})
 @SpringBootApplication
 @EnableTransactionManagement(proxyTargetClass = true)
 @Slf4j

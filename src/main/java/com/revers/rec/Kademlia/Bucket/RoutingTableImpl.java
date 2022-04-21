@@ -6,6 +6,7 @@ import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.util.cypher.DigestUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class RoutingTableImpl implements RoutingTable{
         int count = 0;
         for (Node n : sortedSet)
         {
-            if(n.getNodeId().getDistance(new KademliaId(AccountConfig.getId())) == 0){
+            if(n.getNodeId().equals(new KademliaId(AccountConfig.getId()))){
                 continue; //跳过自身
             }
             closest.add(n);

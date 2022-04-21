@@ -4,7 +4,9 @@ import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.domain.ConnectKey;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.service.connectKey.ConnectKeyService;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.cypher.AesUtil;
@@ -26,6 +28,8 @@ import java.util.HashMap;
 public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
     @Autowired
     private RoutingTable routingTable;
+    @Autowired
+    private ConnectKeyService connectKeyService;
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         HashMap<String, Object> map = (HashMap<String, Object>) msg;
@@ -37,8 +41,16 @@ public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
             ctx.attr(AttributeKey.valueOf("aes")).set(AES);
 
             this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
+            this.connectKeyService = BeanContextUtil.getBean(ConnectKeyService.class);
             routingTable.insert(new Node(new KademliaId(DigestUtil.Sha1AndSha256(publicKey)),connection.getIpv6(),
                     Integer.valueOf(connection.getPort()),publicKey,AES  ));
+
+            ConnectKey connectKey = new ConnectKey();
+            connectKey.setId(DigestUtil.Sha1AndSha256(publicKey));
+            connectKey.setAesKey(AES);
+            connectKey.setPublicKey(publicKey);
+            connectKey.setTimeStamp(System.currentTimeMillis());
+            connectKeyService.saveConnectKey(connectKey);
 
             MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
                     .setOrder(connection.getOrder()+1)
