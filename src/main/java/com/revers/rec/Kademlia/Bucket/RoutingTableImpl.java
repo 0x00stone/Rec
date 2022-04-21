@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class RoutingTableImpl implements RoutingTable{
     public static final int k = 20; // 每个桶最大节点数
-    public static final int p = 2; // 每次向其他node发送请求时,会向p个最近节点发送数据
+    public static final int p = 1; // 每次向其他node发送请求时,会向p个最近节点发送数据
 
     private Node localNode;
     private ArrayList<Bucket> list = new ArrayList<>();
@@ -54,6 +54,9 @@ public class RoutingTableImpl implements RoutingTable{
         int count = 0;
         for (Node n : sortedSet)
         {
+            if(n.getNodeId().getDistance(new KademliaId(AccountConfig.getId())) == 0){
+                continue; //跳过自身
+            }
             closest.add(n);
             if (++count == p)
             {
