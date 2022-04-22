@@ -22,6 +22,7 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 @Slf4j
@@ -46,9 +47,6 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
             }else {
                 String AES = connectKey.getAesKey();
 
-                System.out.println("data:"+connection.getData());
-                System.out.println("aes:"+AES);
-                System.out.println("dataString:"+AesUtil.decrypt(AES, connection.getData()));
                 Data data = JSON.parseObject(AesUtil.decrypt(AES, connection.getData()), Data.class);
 
                 if(AccountConfig.getPublicKey().equals(data.getDestPublicKey())){
@@ -62,15 +60,17 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
                     dataResponse.setData(RsaUtil.publicEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,srcPublicKey));
                     dataResponse.setSignature(RsaUtil.privateEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,AccountConfig.getPrivateKey()));
                     String dataResponseJSON = JSON.toJSONString(dataResponse);
+                    System.out.println("发送消息："+dataResponseJSON);
+                    System.out.println("aes:"+AES);
 
                     MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
                             .setData(AesUtil.encrypt(AES,dataResponseJSON))
                             .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
                             .build();
 
-
                     ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
                             connectionResponse.toByteArray()),datagramPacket.sender()));
+
                     System.out.println("发送回消息："+ConstantUtil.COMMUNICATE_SUCCESS);
 
                 }else {
@@ -100,6 +100,7 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
         }else {
             //super.channelRead(ctx, msg);
             log.info("msgType类型错误");
+            ctx.close();
         }
     }
 }

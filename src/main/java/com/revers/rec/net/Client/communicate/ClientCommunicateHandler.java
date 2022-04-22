@@ -11,13 +11,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 
-public class ClientCommunicateHandler extends SimpleChannelInboundHandler<DatagramPacket> {
+@Slf4j
+public class ClientCommunicateHandler extends SimpleChannelInboundHandler<Object> {
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
-        System.out.println("收到服务器消息");
-        MsgProtobuf.Connection connection = MsgProtobuf.Connection.parseFrom(datagramPacket.content().nioBuffer());
-
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object datagramPacket) throws Exception {
+        System.out.println(datagramPacket.toString());
+        MsgProtobuf.Connection connection = MsgProtobuf.Connection.parseFrom(((DatagramPacket)datagramPacket).content().nioBuffer());
 
         //TODO 服务端发回数据无法接收
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_COMMUNICATE){
@@ -29,6 +30,7 @@ public class ClientCommunicateHandler extends SimpleChannelInboundHandler<Datagr
             channelHandlerContext.attr(AttributeKey.valueOf("data")).set(data);
         }
 
-
+        channelHandlerContext.close();
     }
+
 }

@@ -2,7 +2,6 @@ package com.revers.rec.net.Client.communicate;
 
 import com.alibaba.fastjson.JSON;
 import com.revers.rec.Kademlia.Bucket.RoutingTable;
-import com.revers.rec.Kademlia.Bucket.RoutingTableImpl;
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
@@ -39,53 +38,41 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
-/**
- * @author Revers.
- * @date 2022/04/20 22:22
- **/
 public class ClientCommunicate implements Callable<Data> {
     @Autowired
     private RoutingTable routingTable;
-
-    private ArrayList<Object[]> toNodeList = null; //[MsgProtobuf.Connection[] connection,String HOST,int PORT,Integer order,String aes]
+    private Object[] objects = null;
 
     public ClientCommunicate(Data data) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        toNodeList = new ArrayList<>();
         this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
 
         String dataString = JSON.toJSONString(data);
 
-        for(Node toNode : routingTable.findClosest(new  KademliaId(DigestUtil.Sha1AndSha256(data.getDestPublicKey())))){
-            Object[] objects = new Object[5];
-            String aes = toNode.getAesKey();
+        Node toNode = routingTable.findClosest(new KademliaId(DigestUtil.Sha1AndSha256(data.getDestPublicKey()))).get(0);
+        objects = new Object[5];
+        String aes = toNode.getAesKey();
 
 
-            Long order = new Random().nextLong();
-            MsgProtobuf.Connection connection = MsgProtobuf.Connection.newBuilder()
-                    .setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(),toNode.getPublicKey()))
-                    .setDestPublicKey(toNode.getPublicKey())
-                    .setOrder(order)
-                    .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
-                    .setSignature(RsaUtil.privateEncrypt(Sha256Util.getSHA256(dataString),AccountConfig.getPrivateKey()))
-                    .setTimestamp(System.currentTimeMillis())
-                    .setData(AesUtil.encrypt(aes,dataString))
-                    .build();
-            System.out.println("dataString:"+dataString);
-            System.out.println("aes:"+aes);
-            System.out.println("data:"+connection.getData());
+        Long order = new Random().nextLong();
+        MsgProtobuf.Connection connection = MsgProtobuf.Connection.newBuilder()
+                .setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(), toNode.getPublicKey()))
+                .setDestPublicKey(toNode.getPublicKey())
+                .setOrder(order)
+                .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
+                .setSignature(RsaUtil.privateEncrypt(Sha256Util.getSHA256(dataString), AccountConfig.getPrivateKey()))
+                .setTimestamp(System.currentTimeMillis())
+                .setData(AesUtil.encrypt(aes, dataString))
+                .build();
 
-            objects[0] = connection;
-            objects[1] = toNode.getInetAddress();
-            objects[2] = toNode.getPort();
-            objects[3] = order;
-            objects[4] = aes;
+        objects[0] = connection;
+        objects[1] = toNode.getInetAddress();
+        objects[2] = toNode.getPort();
+        objects[3] = order;
+        objects[4] = aes;
 
-            toNodeList.add(objects);
-        }
     }
-
     @Override
-    public Data call() {
+    public Data call() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -96,65 +83,40 @@ public class ClientCommunicate implements Callable<Data> {
                         @Override
                         public void initChannel(Channel ch){
                             ChannelPipeline pipeline=ch.pipeline();
-                            pipeline.addLast(new ProtobufVarint32FrameDecoder());
-                            pipeline.addLast(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
-                            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
-                            pipeline.addLast(new ProtobufEncoder());
+                            pipeline.addFirst(new ProtobufVarint32FrameDecoder());
+                            pipeline.addFirst(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
+                            pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
+                            pipeline.addFirst(new ProtobufEncoder());
                             pipeline.addLast(new ClientCommunicateHandler());
                         }
                     });
+            Channel ch= b.connect("127.0.0.1",30000).sync().channel();
 
-//            Channel[] channels = new Channel[toNodeList.size()];
-//            int i = 0;
-//            for(Object[] objects : toNodeList) {
-//                channels[i] = b.connect((String) objects[1], (Integer) objects[2]).sync().channel();
-//
-//                channels[i].writeAndFlush(new DatagramPacket(
-//                        Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
-//                        SocketUtils.socketAddress((String) objects[1], (Integer) objects[2]))).sync();
-//                System.out.println("已向 " + i +" 通道发送数据包");
-//
-//                channels[i].attr(AttributeKey.valueOf("orderOrigin")).set(objects[3]);
-//                channels[i].attr(AttributeKey.valueOf("aes")).set(objects[4]);
-//                ++i;
-//            }
+            ch.attr(AttributeKey.valueOf("orderOrigin")).set(objects[3]);
+            ch.attr(AttributeKey.valueOf("aes")).set(objects[4]);
 
-            Channel channel = b.connect((String) toNodeList.get(0)[1], (Integer) toNodeList.get(0)[2]).sync().channel();
+            ch.writeAndFlush(new DatagramPacket(
+                    Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
+                    SocketUtils.socketAddress("127.0.0.1",30000))).sync();
+            System.out.println("已发送Ping消息");
 
-            channel.writeAndFlush(new DatagramPacket(
-                    Unpooled.copiedBuffer(((MsgProtobuf.Connection)toNodeList.get(0)[0]).toByteArray()),
-                    SocketUtils.socketAddress((String) toNodeList.get(0)[1], (Integer) toNodeList.get(0)[2]))).sync();
-            System.out.println("已发送数据包");
 
-            channel.attr(AttributeKey.valueOf("orderOrigin")).set(toNodeList.get(0)[3]);
-            channel.attr(AttributeKey.valueOf("aes")).set(toNodeList.get(0)[4]);
-
-            if(!channel.closeFuture().await(15000)){
+            if(!ch.closeFuture().await(150000)){
+                System.out.println("Time Out");
                 return null;
             }
-            while (channel.attr(AttributeKey.valueOf("data")).get() == null){}
+            while (ch.attr(AttributeKey.valueOf("data")).get() == null){}
 
-            if(channel.attr(AttributeKey.valueOf("data")).get() != null){
-                return (Data) channel.attr(AttributeKey.valueOf("data")).get();
+            if(ch.attr(AttributeKey.valueOf("data")).get() != null){
+                Data data = new Data();
+                data.setData((String) ch.attr(AttributeKey.valueOf("data")).get());
+                return data;
             }
-            /*for(int j = 0 ; j < i ; j++){
-                if(!channels[j].closeFuture().await(150000)){
-                    System.out.println(j + " Channel Time Out");
-                    channels[j].close();
-                    continue;
-                }
-
-                if(channels[j].attr(AttributeKey.valueOf("data")).get() != null){
-                    return (Data) channels[j].attr(AttributeKey.valueOf("data")).get();
-                }
-            }*/
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();
-            return null;
         }
-
+        return null;
     }
 }

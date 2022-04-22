@@ -2,7 +2,6 @@ package com.revers.rec.net.Client;
 
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Data;
-import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.communicate.ClientCommunicate;
 import com.revers.rec.net.Client.handShake.HandShakeClient;
 import com.revers.rec.net.Client.ping.ClientPing;
