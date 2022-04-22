@@ -60,8 +60,6 @@ public class testClient {
         Map<String, String> keyMap = createKeys(4096);
         String publicKey = keyMap.get("publicKey");
         String privateKey = keyMap.get("privateKey");
-        System.out.println(publicKey);
-        System.out.println(privateKey);
         AccountConfig.setId(DigestUtil.Sha1AndSha256(publicKey));
         AccountConfig.setPublicKey(publicKey);
         AccountConfig.setPrivateKey(privateKey);

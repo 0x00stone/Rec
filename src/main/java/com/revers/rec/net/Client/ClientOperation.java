@@ -33,10 +33,10 @@ public class ClientOperation {
 
     public static ResultUtil communicate(String destPublicKey,String content) throws ExecutionException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Data data = new Data();
-        data.setSrcPublicKey(AccountConfig.getPublicKey());
+        data.setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(),destPublicKey));
         data.setDestPublicKey(destPublicKey);
         data.setData(RsaUtil.publicEncrypt(content,destPublicKey));
-        data.setSignature(Sha256Util.getSHA256(data.getData()));
+        data.setSignature(RsaUtil.privateEncrypt(Sha256Util.getSHA256(data.getData()),AccountConfig.getPrivateKey()));
         data.setTimeStamp(String.valueOf(System.currentTimeMillis()));
 
         Data communicate = communicate(data);

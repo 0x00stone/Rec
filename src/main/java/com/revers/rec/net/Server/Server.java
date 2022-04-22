@@ -28,14 +28,15 @@ public class Server implements Callable<Boolean> {
             Bootstrap b = new Bootstrap()
                     .group(group)
                     .channel(NioDatagramChannel.class)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(65535))
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         public void initChannel(Channel ch){
                             ChannelPipeline pipeline=ch.pipeline();
-                            pipeline.addFirst(new ProtobufVarint32FrameDecoder());
-                            pipeline.addFirst(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
-                            pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
-                            pipeline.addFirst(new ProtobufEncoder());
+                            pipeline.addLast(new ProtobufVarint32FrameDecoder());
+                            pipeline.addLast(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
+                            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
+                            pipeline.addLast(new ProtobufEncoder());
                             pipeline.addLast(new ServerPingHandler());
                             pipeline.addLast(new HandShakeServerHandler1());
                             pipeline.addLast(new HandShakeServerHandler3());

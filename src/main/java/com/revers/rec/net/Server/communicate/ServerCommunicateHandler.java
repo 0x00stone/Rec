@@ -38,34 +38,43 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_COMMUNICATE){
             this.connectKeyService = BeanContextUtil.getBean(ConnectKeyService.class);
             String srcConnectionPublicKey = connection.getSrcPublicKey();
-            String srcId = DigestUtil.Sha1AndSha256(srcConnectionPublicKey);
+            String srcId = DigestUtil.Sha1AndSha256(RsaUtil.privateDecrypt(srcConnectionPublicKey,AccountConfig.getPrivateKey()));
             ConnectKey connectKey = connectKeyService.getConnectKey(srcId);
-            String AES = connectKey.getAesKey();
-            Data data = (Data) JSON.parse(AesUtil.decrypt(AES, connection.getData()));
-
-
-            if(AccountConfig.getPublicKey().equals(data.getDestPublicKey())){
-                //收到的消息是自己的消息
-                //String srcPublicKeyDe = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
-                String context = RsaUtil.privateDecrypt(data.getData(),AccountConfig.getPrivateKey());
-                System.out.println("收到消息："+context);
-
-                Data dataResponse = new Data();
-                dataResponse.setData(RsaUtil.publicEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,AccountConfig.getPublicKey()));
-                dataResponse.setSignature(RsaUtil.privateEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,AccountConfig.getPrivateKey()));
-                String dataResponseJSON = JSON.toJSONString(dataResponse);
-
-                MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
-                        .setData(AesUtil.encrypt(AES,dataResponseJSON))
-                        .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
-                        .build();
-
-
-                ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
-                        connectionResponse.toByteArray()),datagramPacket.sender()));
-
+            if(connectKey == null){
+                //TODO
+                log.info("没有找到对应的connectKey");
             }else {
-                //收到的消息不是自己的消息
+                String AES = connectKey.getAesKey();
+
+                System.out.println("data:"+connection.getData());
+                System.out.println("aes:"+AES);
+                System.out.println("dataString:"+AesUtil.decrypt(AES, connection.getData()));
+                Data data = JSON.parseObject(AesUtil.decrypt(AES, connection.getData()), Data.class);
+
+                if(AccountConfig.getPublicKey().equals(data.getDestPublicKey())){
+                    //收到的消息是自己的消息
+                    //String srcPublicKeyDe = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
+                    String context = RsaUtil.privateDecrypt(data.getData(),AccountConfig.getPrivateKey());
+                    String srcPublicKey = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
+                    System.out.println("收到消息："+context);
+
+                    Data dataResponse = new Data();
+                    dataResponse.setData(RsaUtil.publicEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,srcPublicKey));
+                    dataResponse.setSignature(RsaUtil.privateEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,AccountConfig.getPrivateKey()));
+                    String dataResponseJSON = JSON.toJSONString(dataResponse);
+
+                    MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
+                            .setData(AesUtil.encrypt(AES,dataResponseJSON))
+                            .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
+                            .build();
+
+
+                    ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
+                            connectionResponse.toByteArray()),datagramPacket.sender()));
+                    System.out.println("发送回消息："+ConstantUtil.COMMUNICATE_SUCCESS);
+
+                }else {
+                    //收到的消息不是自己的消息
                 /*MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
                         .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
                         .setSrcPublicKey(AccountConfig.getPublicKey())
@@ -74,7 +83,12 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
 
                 ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
                         connectionResponse.toByteArray()),datagramPacket.sender()));*/
+                }
             }
+
+
+
+
 
            /* String publicKey = (String)ctx.attr(AttributeKey.valueOf("publicKey")).get();
             String AES = RsaUtil.privateDecrypt(connection.getData(), AccountConfig.getPrivateKey());

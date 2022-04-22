@@ -70,6 +70,9 @@ public class ClientCommunicate implements Callable<Data> {
                     .setTimestamp(System.currentTimeMillis())
                     .setData(AesUtil.encrypt(aes,dataString))
                     .build();
+            System.out.println("dataString:"+dataString);
+            System.out.println("aes:"+aes);
+            System.out.println("data:"+connection.getData());
 
             objects[0] = connection;
             objects[1] = toNode.getInetAddress();
@@ -88,35 +91,53 @@ public class ClientCommunicate implements Callable<Data> {
             Bootstrap b = new Bootstrap()
                     .group(group)
                     .channel(NioDatagramChannel.class)
-                    .option(ChannelOption.SO_KEEPALIVE, false)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(65535))
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         public void initChannel(Channel ch){
                             ChannelPipeline pipeline=ch.pipeline();
-                            pipeline.addFirst(new ProtobufVarint32FrameDecoder());
-                            pipeline.addFirst(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
-                            pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
-                            pipeline.addFirst(new ProtobufEncoder());
+                            pipeline.addLast(new ProtobufVarint32FrameDecoder());
+                            pipeline.addLast(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
+                            pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
+                            pipeline.addLast(new ProtobufEncoder());
                             pipeline.addLast(new ClientCommunicateHandler());
                         }
                     });
 
-            Channel[] channels = new Channel[toNodeList.size()];
-            int i = 0;
-            for(Object[] objects : toNodeList) {
-                channels[i] = b.connect((String) objects[1], (Integer) objects[2]).sync().channel();
+//            Channel[] channels = new Channel[toNodeList.size()];
+//            int i = 0;
+//            for(Object[] objects : toNodeList) {
+//                channels[i] = b.connect((String) objects[1], (Integer) objects[2]).sync().channel();
+//
+//                channels[i].writeAndFlush(new DatagramPacket(
+//                        Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
+//                        SocketUtils.socketAddress((String) objects[1], (Integer) objects[2]))).sync();
+//                System.out.println("已向 " + i +" 通道发送数据包");
+//
+//                channels[i].attr(AttributeKey.valueOf("orderOrigin")).set(objects[3]);
+//                channels[i].attr(AttributeKey.valueOf("aes")).set(objects[4]);
+//                ++i;
+//            }
 
-                channels[i].writeAndFlush(new DatagramPacket(
-                        Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
-                        SocketUtils.socketAddress((String) objects[1], (Integer) objects[2]))).sync();
-                System.out.println("已向 " + i +" 通道发送数据包");
+            Channel channel = b.connect((String) toNodeList.get(0)[1], (Integer) toNodeList.get(0)[2]).sync().channel();
 
-                channels[i].attr(AttributeKey.valueOf("orderOrigin")).set(objects[3]);
-                channels[i].attr(AttributeKey.valueOf("aes")).set(objects[4]);
-                ++i;
+            channel.writeAndFlush(new DatagramPacket(
+                    Unpooled.copiedBuffer(((MsgProtobuf.Connection)toNodeList.get(0)[0]).toByteArray()),
+                    SocketUtils.socketAddress((String) toNodeList.get(0)[1], (Integer) toNodeList.get(0)[2]))).sync();
+            System.out.println("已发送数据包");
+
+            channel.attr(AttributeKey.valueOf("orderOrigin")).set(toNodeList.get(0)[3]);
+            channel.attr(AttributeKey.valueOf("aes")).set(toNodeList.get(0)[4]);
+
+            if(!channel.closeFuture().await(15000)){
+                return null;
             }
+            while (channel.attr(AttributeKey.valueOf("data")).get() == null){}
 
-            for(int j = 0 ; j < i ; j++){
+            if(channel.attr(AttributeKey.valueOf("data")).get() != null){
+                return (Data) channel.attr(AttributeKey.valueOf("data")).get();
+            }
+            /*for(int j = 0 ; j < i ; j++){
                 if(!channels[j].closeFuture().await(150000)){
                     System.out.println(j + " Channel Time Out");
                     channels[j].close();
@@ -126,7 +147,7 @@ public class ClientCommunicate implements Callable<Data> {
                 if(channels[j].attr(AttributeKey.valueOf("data")).get() != null){
                     return (Data) channels[j].attr(AttributeKey.valueOf("data")).get();
                 }
-            }
+            }*/
 
         } catch (InterruptedException e) {
             e.printStackTrace();
