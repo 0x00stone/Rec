@@ -16,12 +16,12 @@ import java.util.Scanner;
 public class Login  {
 
     @Autowired
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
 
     @Autowired
-    RoutingTableImpl routingTableImpl;
+    private RoutingTableImpl routingTableImpl;
     @Autowired
-    RoutingTable routingTable;
+    private RoutingTable routingTable;
 
     //预先加载用户(登录或注册)
     public void run(){
@@ -29,9 +29,6 @@ public class Login  {
         this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
         this.routingTableImpl = BeanContextUtil.getBean(RoutingTableImpl.class);
         this.userService = BeanContextUtil.getBean(UserServiceImpl.class);
-        System.out.println("routingTablerun"+routingTable);
-        System.out.println("routingTableImplrun"+routingTableImpl);
-        System.out.println("userService"+userService);
 
         try {
             while (AccountConfig.getPublicKey() == null) {

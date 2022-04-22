@@ -1,6 +1,8 @@
 package com.revers.rec;
 
 import com.revers.rec.cli.Login;
+import com.revers.rec.cli.Menu;
+import com.revers.rec.cli.ScanThread;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.NetworkUtil;
@@ -26,6 +28,10 @@ public class RecApplication implements CommandLineRunner {
         login.start();*/
         Login login = new Login();
         login.run();
+
+        Menu.printMenu();
+
+        new Thread(new ScanThread()).start();
     }
 
     @Override

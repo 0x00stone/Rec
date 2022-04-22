@@ -4,6 +4,7 @@ import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.User;
 import com.revers.rec.mapper.UserMapper;
 import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.cypher.DigestUtil;
 import com.revers.rec.util.cypher.RsaUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
             Map<String, String> rsaKey = RsaUtil.createKeys(4096);
             user.setPublicKey(rsaKey.get("publicKey"));
             user.setPrivateKey(rsaKey.get("privateKey"));
-            user.setId(DigestUtils.sha1Hex(rsaKey.get("publicKey")));
+            user.setId(DigestUtil.Sha1AndSha256(rsaKey.get("publicKey")));
             user.setUsername(username);
             String originkey = getAseKey(256);
             String aesKey = enVigenere(originkey,getSHA256(password));
