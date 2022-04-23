@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 @Slf4j
 public class ScanThread implements Runnable{
-
+//TODO 实现
     public ScanThread() {
 
     }
@@ -24,6 +24,11 @@ public class ScanThread implements Runnable{
         while (true) {
 
             String[] choice = new Scanner(System.in).nextLine().split(" ");
+            if("/m".equals(choice[0])){
+                log.info("/l");
+                continue;
+            }
+
             if("/l".equals(choice[0])){
                 log.info("/l");
                 continue;
@@ -55,6 +60,9 @@ public class ScanThread implements Runnable{
             }
 
         }
+    }
+    private void m(){
+
     }
 
     private void l(){}

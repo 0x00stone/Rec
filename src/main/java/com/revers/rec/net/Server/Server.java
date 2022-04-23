@@ -50,7 +50,6 @@ public class Server implements Callable<Boolean> {
                     b.bind(optionConfig.getServerListenPort()).sync().channel().closeFuture().await();
                     isListening = true;
                 } catch (Exception e) {
-                    System.console().flush();
                     System.out.println("==========================端口" + optionConfig.getServerListenPort() + "已被占用===========================");
                     optionConfig.setServerListenPort(optionConfig.getServerListenPort() + 1);
                     System.out.println("==========================开启监听端口" + optionConfig.getServerListenPort() + "===========================");

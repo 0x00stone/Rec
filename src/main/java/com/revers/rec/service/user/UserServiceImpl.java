@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
             String originkey = getAseKey(256);
             String aesKey = enVigenere(originkey,getSHA256(password));
             user.setAeskey(aesKey);
-            messageTableService.createTable(user.getUsername());
+            messageTableService.createTable(user.getId());
             System.out.println(userMapper.createUser(user));
 
 

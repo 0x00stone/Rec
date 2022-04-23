@@ -12,32 +12,30 @@ import java.util.List;
 public interface MessageMapper {
 
     //TODO 设置主键为UUID
-    @Insert("insert into ${tableName}(type,createTime,updateTime,isSender,isRead,strTalker,strContent)" +
+    @Insert("insert into '${tableName}'(type,createTime,updateTime,isSender,isRead,strTalker,strContent)" +
             "values(#{message.type},#{message.createTime},#{message.updateTime},#{message.isSender},#{message.isRead},#{message.strTalker},#{message.strContent});")
-    @SelectKey(statement = "SELECT seq messageId FROM sqlite_sequence WHERE (name = 'message')", before = true, keyProperty = "tableName.messageId", resultType = String.class)
+    @SelectKey(statement = "SELECT seq messageId FROM sqlite_sequence WHERE (name = 'message')", before = false, keyProperty = "messageId", resultType = Integer.class)
     public boolean createMessage(Message message,String tableName);
 
-    @Update("update #{tableName} set isRead = #{isRead} ,updateTime = #{updateTime} where messageId = #{messageId};")
-    public void readMessage(int messageId,Long updateTime);
+    @Update("update '${tableName}' set isRead = #{isRead} ,updateTime = #{updateTime} where messageId = #{messageId};")
+    public void readMessage(int messageId,Long updateTime,String tableName);
 
+    @Select("select * from '${tableName}' ORDER BY messageId desc limit 20 ")
+    public List<Message> findRecent(String tableName);
 
-
-
-
-    @Delete("delete from #{tableName} where messageId = #{messageId};")
+    @Delete("delete from ${tableName} where messageId = #{messageId};")
     public void deleteUser(Integer messageId);
 
-    @Select("select * from #{tableName};")
+    @Select("select * from ${tableName};")
     public List<Message> findAll();
 
-    @Select("select * from #{tableName} where strTalker = #{strTalker};")
+    @Select("select * from ${tableName} where strTalker = #{strTalker};")
     public List<Message> findByTalker(String strTalker);
 
-    @Select("select * from #{tableName} where messageId = #{messageId};")
+    @Select("select * from ${tableName} where messageId = #{messageId};")
     public Message findById(Integer messageId);
 
-    @Select("select * from #{tableName} limit 20")
-    public List<Message> findRecent();
+
 
 
 

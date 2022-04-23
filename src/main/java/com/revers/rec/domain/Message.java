@@ -15,8 +15,7 @@ import java.io.Serializable;
 @ToString
 public class Message implements Serializable {
 
-
-    private String messageId;
+    private Integer messageId;
     private Integer type;
     private Integer isSender;
     private Integer isRead;

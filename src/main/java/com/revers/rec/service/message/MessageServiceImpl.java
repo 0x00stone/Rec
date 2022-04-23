@@ -35,12 +35,12 @@ public class MessageServiceImpl implements MessageService {
         }else {
             message.setIsSender(0);
         }
-        messageMapper.createMessage(message,AccountConfig.getUsername());
+        messageMapper.createMessage(message,AccountConfig.getId());
     }
 
     @Override
     public void readMessage(Integer messageid) {
-        messageMapper.readMessage(messageid,System.currentTimeMillis());
+        messageMapper.readMessage(messageid,System.currentTimeMillis(),AccountConfig.getId());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<Message> getRecentMessage() {
-        return null;
+        return messageMapper.findRecent(AccountConfig.getId());
     }
 
     @Override
