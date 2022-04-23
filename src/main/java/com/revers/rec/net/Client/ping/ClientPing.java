@@ -1,5 +1,6 @@
 package com.revers.rec.net.Client.ping;
 
+import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.ResultUtil;
@@ -61,7 +62,7 @@ public final class ClientPing implements Callable<ResultUtil> {
                     SocketUtils.socketAddress(HOST,PORT))).sync();
             System.out.println("已发送Ping消息");
 
-            if(!ch.closeFuture().await(15000)){
+            if(!ch.closeFuture().await(optionConfig.getClientClientPingRunTimeOut())){
                 System.out.println("Time Out");
                 return new ResultUtil(false,"Time Out");
             }

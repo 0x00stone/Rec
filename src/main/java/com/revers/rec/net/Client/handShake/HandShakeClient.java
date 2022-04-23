@@ -1,6 +1,7 @@
 package com.revers.rec.net.Client.handShake;
 
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.ResultUtil;
@@ -67,7 +68,7 @@ public class HandShakeClient implements Callable<ResultUtil> {
                     SocketUtils.socketAddress(HOST,PORT))).sync();
             System.out.println("已发送");
 
-            if(!ch.closeFuture().await(15000)){
+            if(!ch.closeFuture().await(optionConfig.getClientHandShakeClientRunTimeOut())){
                 return new ResultUtil(false,"Time Out");
             }
             while (ch.attr(AttributeKey.valueOf("isSuccess")).get() == null){}

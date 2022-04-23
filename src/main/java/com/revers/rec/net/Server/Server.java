@@ -1,5 +1,6 @@
 package com.revers.rec.net.Server;
 
+import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Server.communicate.ServerCommunicateHandler;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler1;
@@ -17,9 +18,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import java.util.concurrent.Callable;
 
 public class Server implements Callable<Boolean> {
-    public static final int PORT = 30000;
-
-
 
     @Override
     public Boolean call() {
@@ -44,10 +42,22 @@ public class Server implements Callable<Boolean> {
                         }
                     });
 
-            System.out.println("==========================服务端已启动,监听"+PORT+"端口中===========================");
-            b.bind(PORT).sync().channel().closeFuture().await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.out.println("==========================服务端已启动,监听"+optionConfig.getServerListenPort()+"端口中===========================");
+
+            boolean isListening = false;
+            while (!isListening) {
+                try {
+                    b.bind(optionConfig.getServerListenPort()).sync().channel().closeFuture().await();
+                    isListening = true;
+                } catch (Exception e) {
+                    System.console().flush();
+                    System.out.println("==========================端口" + optionConfig.getServerListenPort() + "已被占用===========================");
+                    optionConfig.setServerListenPort(optionConfig.getServerListenPort() + 1);
+                    System.out.println("==========================开启监听端口" + optionConfig.getServerListenPort() + "===========================");
+                }
+            }
+
+
         } catch (Exception e){
             e.printStackTrace();
         }finally {

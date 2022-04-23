@@ -5,6 +5,7 @@ import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.ping.ClientPingHandler;
@@ -101,7 +102,7 @@ public class ClientCommunicate implements Callable<Data> {
             System.out.println("已发送Ping消息");
 
 
-            if(!ch.closeFuture().await(150000)){
+            if(!ch.closeFuture().await(optionConfig.getClientCommunicateRunTimeOut())){
                 System.out.println("Time Out");
                 return null;
             }
