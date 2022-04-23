@@ -3,6 +3,7 @@ package com.revers.rec.service.user;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.User;
 import com.revers.rec.mapper.UserMapper;
+import com.revers.rec.service.table.MessageTableService;
 import com.revers.rec.util.ResultUtil;
 import com.revers.rec.util.cypher.DigestUtil;
 import com.revers.rec.util.cypher.RsaUtil;
@@ -31,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private AccountConfig accountConfig;
+
+    @Autowired
+    private MessageTableService messageTableService;
 
     // 从 数据库中查找 username 用户并放入accountConfig账户配置中
     @Override
@@ -79,11 +83,12 @@ public class UserServiceImpl implements UserService {
             String originkey = getAseKey(256);
             String aesKey = enVigenere(originkey,getSHA256(password));
             user.setAeskey(aesKey);
+            messageTableService.createTable(user.getUsername());
             System.out.println(userMapper.createUser(user));
+
 
             resultUtil.setFlag(true);
             resultUtil.setMsg(username + " 注册成功");
-            log.info(username + " 注册成功");
         }
         return resultUtil;
     }

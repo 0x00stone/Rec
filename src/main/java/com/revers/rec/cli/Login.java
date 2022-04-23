@@ -59,7 +59,7 @@ public class Login  {
                         while (!scanner.hasNextLine()) {
                         }
                         String password = scanner.nextLine();
-                        System.out.println("正在注册" + username + "中,请稍等...");
+                        log.info("正在注册" + username + "中,请稍等...");
 
                         log.info(userService.register(username, password).getMsg());
 

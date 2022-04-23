@@ -4,6 +4,9 @@ import com.revers.rec.cli.Login;
 import com.revers.rec.cli.Menu;
 import com.revers.rec.cli.ScanThread;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.config.optionConfig;
+import com.revers.rec.net.Server.Server;
+import com.revers.rec.service.user.UserServiceImpl;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.NetworkUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -14,24 +17,34 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+
 @PropertySource(encoding = "UTF-8", value = {"classpath:application.properties"})
 @SpringBootApplication
 @EnableTransactionManagement(proxyTargetClass = true)
 @Slf4j
 public class RecApplication implements CommandLineRunner {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         ConfigurableApplicationContext run = SpringApplication.run(RecApplication.class, args);
         new BeanContextUtil().setApplicationContext(run);;
 
-        /*Thread login = new Thread(new Login());
-        login.start();*/
-        Login login = new Login();
-        login.run();
+
+//        Login login = new Login();
+//        login.run();
+//        测试阶段默认登录a1
+        UserServiceImpl userService;
+        userService = BeanContextUtil.getBean(UserServiceImpl.class);
+        log.info(userService.login("a1", "123456").getMsg());
 
         Menu.printMenu();
 
         new Thread(new ScanThread()).start();
+
+        FutureTask<Boolean> futureTask = new FutureTask<>(new Server());
+        futureTask.run();
+        if(futureTask.get() == false){}
     }
 
     @Override
@@ -53,5 +66,7 @@ public class RecApplication implements CommandLineRunner {
         }else {
             log.info("获取本地ipv6地址失败");
         }
+
+        AccountConfig.setIpv6Port(optionConfig.getServerListenPort());
     }
 }

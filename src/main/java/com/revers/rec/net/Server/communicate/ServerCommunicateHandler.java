@@ -10,6 +10,7 @@ import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.ClientOperation;
 import com.revers.rec.service.connectKey.ConnectKeyService;
+import com.revers.rec.service.message.MessageService;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.cypher.AesUtil;
@@ -28,6 +29,9 @@ import java.util.HashMap;
 @Slf4j
 public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
     @Autowired
+    private MessageService messageService;
+
+    @Autowired
     private ConnectKeyService connectKeyService;
 
     @Override
@@ -38,6 +42,7 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
 
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_COMMUNICATE){
             this.connectKeyService = BeanContextUtil.getBean(ConnectKeyService.class);
+            this.messageService = BeanContextUtil.getBean(MessageService.class);
             String srcConnectionPublicKey = connection.getSrcPublicKey();
             String srcId = DigestUtil.Sha1AndSha256(RsaUtil.privateDecrypt(srcConnectionPublicKey,AccountConfig.getPrivateKey()));
             ConnectKey connectKey = connectKeyService.getConnectKey(srcId);
@@ -54,8 +59,12 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
                     //String srcPublicKeyDe = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
                     String context = RsaUtil.privateDecrypt(data.getData(),AccountConfig.getPrivateKey());
                     String srcPublicKey = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
-                    System.out.println("收到来自 " + srcPublicKey + " 的消息：\n" + context);
+                    log.info("收到来自 " + srcPublicKey + " 的消息：\n" + context);
 
+                    //存储消息
+                    messageService.saveMessage(context,srcPublicKey,false);
+
+                    //发送回复
                     Data dataResponse = new Data();
                     dataResponse.setData(RsaUtil.publicEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,srcPublicKey));
                     dataResponse.setSignature(RsaUtil.privateEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,AccountConfig.getPrivateKey()));
