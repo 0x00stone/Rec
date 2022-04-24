@@ -70,7 +70,7 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
                     //显示消息
                     Friend friendByFriendPublicKey = friendService.findFriendByFriendPublicKey(srcPublicKey);
                     if(friendByFriendPublicKey == null){
-                        System.out.println("收到消息: "+ context+" 来自陌生人 " + srcPublicKey);
+                        System.out.println("收到消息: "+ context+" 来自陌生人 " + srcPublicKey.substring(srcPublicKey.length()-17,srcPublicKey.length()-7));
                     }else{
                         System.out.println("收到消息: "+ context+" 来自好友 " + friendByFriendPublicKey.getFriendName());
                     }
@@ -115,5 +115,11 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
             log.info("msgType类型错误");
             ctx.close();
         }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.info("发送时产生异常");
+        super.exceptionCaught(ctx, cause);
     }
 }

@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.net.PortUnreachableException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -81,7 +82,6 @@ public class ClientCommunicate implements Callable<Data> {
         objects[2] = toNode.getPort();
         objects[3] = order;
         objects[4] = aes;
-        System.out.println(1);
     }
     @Override
     public Data call() throws Exception {
@@ -105,15 +105,16 @@ public class ClientCommunicate implements Callable<Data> {
                             pipeline.addLast(new ClientCommunicateHandler());
                         }
                     });
-            Channel ch= b.connect("127.0.0.1",30000).sync().channel();
+            Channel ch= b.connect((String)objects[1], (Integer) objects[2]).sync().channel();
 
             ch.attr(AttributeKey.valueOf("orderOrigin")).set(objects[3]);
             ch.attr(AttributeKey.valueOf("aes")).set(objects[4]);
 
-            ch.writeAndFlush(new DatagramPacket(
-                    Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
-                    SocketUtils.socketAddress("127.0.0.1",30000))).sync();
-            System.out.println("已发送消息");
+            DatagramPacket datagramPacket = new DatagramPacket(
+                    Unpooled.copiedBuffer(((MsgProtobuf.Connection) objects[0]).toByteArray()),
+                    SocketUtils.socketAddress((String)objects[1], (Integer) objects[2]));
+            ch.writeAndFlush(datagramPacket).sync();
+            log.info(datagramPacket.toString());
 
 
             if(!ch.closeFuture().await(optionConfig.getClientCommunicateRunTimeOut())){
@@ -127,7 +128,7 @@ public class ClientCommunicate implements Callable<Data> {
                 data.setData((String) ch.attr(AttributeKey.valueOf("data")).get());
                 return data;
             }
-        } catch (InterruptedException e) {
+        }catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();

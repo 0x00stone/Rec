@@ -20,7 +20,6 @@ public class ClientCommunicateHandler extends SimpleChannelInboundHandler<Object
         log.info(datagramPacket.toString());
         MsgProtobuf.Connection connection = MsgProtobuf.Connection.parseFrom(((DatagramPacket)datagramPacket).content().nioBuffer());
 
-        //TODO 服务端发回数据无法接收
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_COMMUNICATE){
             String aes = (String)channelHandlerContext.attr(AttributeKey.valueOf("aes")).get();
             String responseDataString = AesUtil.decrypt(aes,connection.getData());

@@ -50,4 +50,10 @@ public class HandShakeClientHandler2 extends SimpleChannelInboundHandler<Datagra
             channelHandlerContext.fireChannelRead(map);
         }
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        log.info("握手时产生异常");
+        super.exceptionCaught(ctx, cause);
+    }
 }

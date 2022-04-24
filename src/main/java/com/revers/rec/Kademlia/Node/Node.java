@@ -12,11 +12,11 @@ public class Node implements Serializable
 
     private KademliaId nodeId;
     private String inetAddress;
-    private int port;
+    private Integer port;
     private String publicKey;
     private String aesKey;
 
-    public Node(KademliaId nid, String ip, int port,String publicKey,String aesKey)
+    public Node(KademliaId nid, String ip, Integer port,String publicKey,String aesKey)
     {
         this.nodeId = nid;
         this.inetAddress = ip;

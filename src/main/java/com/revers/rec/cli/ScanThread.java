@@ -64,26 +64,21 @@ public class ScanThread implements Runnable{
                 log.info("/m");
                 if(choice.length != 3){
                     log.info("参数错误");
-                    continue;
                 }else {
                     m(choice);
-                    continue;
                 }
             }
             if("/r".equals(choice[0])){
                 r();
-                continue;
             }
 
             if("/u".equals(choice[0])){
                 u();
-                continue;
             }
 
             if("/l".equals(choice[0])){
                 if(choice.length == 3) {
                     l(choice[1], choice[2]);
-                    continue;
                 }else {
                     log.info("参数错误");
                 }
@@ -91,12 +86,10 @@ public class ScanThread implements Runnable{
 
             if("/b".equals(choice[0])){
                 b();
-                continue;
             }
 
             if("/t".equals(choice[0])){
                 t();
-                continue;
             }
 
             if("/ff".equals(choice[0])){
@@ -105,7 +98,6 @@ public class ScanThread implements Runnable{
                 }else {
                     log.info("参数错误");
                 }
-                continue;
             }
             if("/fa".equals(choice[0])){
                 if(choice.length == 2){
@@ -113,29 +105,25 @@ public class ScanThread implements Runnable{
                 }else {
                     log.info("参数错误");
                 }
-                continue;
             }
 
             if("/h".equals(choice[0])){
                 h();
-                continue;
             }
 
             if("/rn".equals(choice[0])){
                 rn();
-                continue;
             }
 
             if("/sf".equals(choice[0])){
                 sf(choice[1]);
-                continue;
             }
 
             if("/sa".equals(choice[0])){
                 sa(choice[1]);
-                continue;
             }
 
+            Menu.printTips();
         }
     }
 
@@ -147,30 +135,25 @@ public class ScanThread implements Runnable{
         }else{
             log.info("没有找到好友");
         }
-        Menu.printTips();
     }
 
     private void sa(String friendPublicKey){
         sendMessage(friendPublicKey);
-        Menu.printTips();
     }
 
     private void rn(){
         printMessageList(messageService.findUnreadByTalker());
-        Menu.printTips();
     }
 
 
     private void ff(String friendName){
         String friendPublicKey = friendService.findFriendByName(friendName).getFriendPublicKey();
         printMessageList(messageService.findByTalker(friendPublicKey));
-        Menu.printTips();
     }
 
     private void fa(String friendPublicKey){
 
         printMessageList(messageService.findByTalker(friendPublicKey));
-        Menu.printTips();
     }
 
     private void b(){
@@ -179,14 +162,12 @@ public class ScanThread implements Runnable{
                 System.out.println(bucket.toString());
             }
         }
-        Menu.printTips();
     }
 
     private void t(){
         for(Node node : routingTable.getAllNodes()){
             System.out.println("节点名 : " + node.getNodeId() + " 节点地址 : " + node.getInetAddress() + ":" + node.getPort());
         }
-        Menu.printTips();
     }
 
     private void l(String ip,String port){
@@ -200,28 +181,23 @@ public class ScanThread implements Runnable{
             e.printStackTrace();
             log.info("连接失败");
         }
-        Menu.printTips();
     }
 
     private void r(){
         printMessageList(messageService.getRecentMessage());
-        Menu.printTips();
     }
 
     private void m(String[] choice){
         friendService.addFriend(choice[1],choice[2]);
-        Menu.printTips();
     }
 
     private void u(){
         for(Friend friend : friendService.findAllFriend()){
             System.out.println("好友名称 : " + friend.getFriendName() + " 好友创建日期 : " + new SimpleDateFormat("yyyy年MM月dd日").format(new Date(friend.getCreateTime())) +" 好友公钥 : " + friend.getFriendPublicKey());
         }
-        Menu.printTips();
     }
 
     private void h(){
-
         Menu.printMenu();
     }
 
@@ -264,9 +240,8 @@ public class ScanThread implements Runnable{
         String content = "";
 
         Scanner scanner = new Scanner(System.in);
-        while (!scanner.hasNextLine()){
-            content = scanner.nextLine();
-        }
+        while (!scanner.hasNextLine()){}
+        content = scanner.nextLine();
 
         ResultUtil communicate = null;
         try {
@@ -274,7 +249,7 @@ public class ScanThread implements Runnable{
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
-            if(communicate != null){
+            if(communicate != null && communicate.getData() != null && !"".equals(communicate.getData())){
                 if(ConstantUtil.COMMUNICATE_SUCCESS.equals(((Data)communicate.getData()).getData())){
                     log.info("已接收");
                 }else {
