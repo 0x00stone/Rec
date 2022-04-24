@@ -4,12 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
+import com.revers.rec.cli.Menu;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.ConnectKey;
 import com.revers.rec.domain.Data;
+import com.revers.rec.domain.Friend;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.ClientOperation;
 import com.revers.rec.service.connectKey.ConnectKeyService;
+import com.revers.rec.service.friend.FriendService;
 import com.revers.rec.service.message.MessageService;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
@@ -34,6 +37,9 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private ConnectKeyService connectKeyService;
 
+    @Autowired
+    private FriendService friendService;
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         HashMap<String, Object> map = (HashMap<String, Object>) msg;
@@ -43,6 +49,7 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_COMMUNICATE){
             this.connectKeyService = BeanContextUtil.getBean(ConnectKeyService.class);
             this.messageService = BeanContextUtil.getBean(MessageService.class);
+            this.friendService = BeanContextUtil.getBean(FriendService.class);
             String srcConnectionPublicKey = connection.getSrcPublicKey();
             String srcId = DigestUtil.Sha1AndSha256(RsaUtil.privateDecrypt(srcConnectionPublicKey,AccountConfig.getPrivateKey()));
             ConnectKey connectKey = connectKeyService.getConnectKey(srcId);
@@ -59,7 +66,16 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
                     //String srcPublicKeyDe = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
                     String context = RsaUtil.privateDecrypt(data.getData(),AccountConfig.getPrivateKey());
                     String srcPublicKey = RsaUtil.privateDecrypt(data.getSrcPublicKey(),AccountConfig.getPrivateKey());
-                    log.info("收到来自 " + srcPublicKey + " 的消息：\n" + context);
+
+                    //显示消息
+                    Friend friendByFriendPublicKey = friendService.findFriendByFriendPublicKey(srcPublicKey);
+                    if(friendByFriendPublicKey == null){
+                        System.out.println("收到消息: "+ context+" 来自陌生人 " + srcPublicKey);
+                    }else{
+                        System.out.println("收到消息: "+ context+" 来自好友 " + friendByFriendPublicKey.getFriendName());
+                    }
+                    Menu.printTips();
+
 
                     //存储消息
                     messageService.saveMessage(context,srcPublicKey,false);

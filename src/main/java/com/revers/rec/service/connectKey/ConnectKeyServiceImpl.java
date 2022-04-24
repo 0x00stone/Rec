@@ -49,10 +49,6 @@ public class ConnectKeyServiceImpl implements ConnectKeyService {
             log.info("id值为空");
             return;
         }
-        if(getConnectKey(connectKey.getId()) == null) {
-            connectKeyMapper.updateConnectKey(connectKey);
-        }else {
-            log.info("已存在同id字段");
-        }
+        connectKeyMapper.updateConnectKey(connectKey);
     }
 }

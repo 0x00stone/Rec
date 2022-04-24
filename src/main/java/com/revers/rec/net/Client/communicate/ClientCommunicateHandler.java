@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientCommunicateHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object datagramPacket) throws Exception {
-        System.out.println(datagramPacket.toString());
+        log.info(datagramPacket.toString());
         MsgProtobuf.Connection connection = MsgProtobuf.Connection.parseFrom(((DatagramPacket)datagramPacket).content().nioBuffer());
 
         //TODO 服务端发回数据无法接收

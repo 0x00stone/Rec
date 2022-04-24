@@ -55,6 +55,17 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void deleteMessage(String messageid) {
-
+        messageMapper.deleteMessageId(messageid,AccountConfig.getId());
     }
+
+    @Override
+    public List<Message> findByTalker(String talker) {
+        return messageMapper.findByTalker(talker,AccountConfig.getId());
+    }
+
+    @Override
+    public List<Message> findUnreadByTalker(){
+        return messageMapper.findUnreadByTalker(AccountConfig.getId());
+    }
+
 }

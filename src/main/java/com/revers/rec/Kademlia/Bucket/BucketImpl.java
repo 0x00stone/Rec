@@ -32,12 +32,12 @@ public class BucketImpl implements Bucket{
             removeNode(n);
             bucket.add(n);
             depth++;
-            log.info("bucket " + this.getBucketId() + " 移除并插入第 " +  this.getDepth() + " 个节点" + n.getNodeId());
+            log.info("bucket " + this.getBucketId() + " 插入第 " +  this.getDepth() + " 个节点" + n.getNodeId() + " 地址" + n.getInetAddress() + ":" + n.getPort());
         }else {
             if (depth < RoutingTableImpl.k) {
                 bucket.add(n);
                 depth++;
-                log.info("bucket " + this.getBucketId() + " 插入第 " +  this.getDepth() + " 个节点" + n.getNodeId());
+                log.info("bucket " + this.getBucketId() + " 插入第 " +  this.getDepth() + " 个节点" + n.getNodeId() + " 地址" + n.getInetAddress() + ":" + n.getPort());
 
             }else {
                 ResultUtil ping = ClientOperation.ping(bucket.getFirst().getInetAddress(), bucket.getFirst().getPort());
@@ -74,10 +74,8 @@ public class BucketImpl implements Bucket{
 
     @Override
     public String toString() {
-        return "BucketImpl{" +
-                "bucketId=" + bucketId +
+        return "bucketId=" + bucketId +
                 ", depth=" + depth +
-                ", bucket=" + bucket +
-                '}';
+                ", bucket=" + bucket ;
     }
 }

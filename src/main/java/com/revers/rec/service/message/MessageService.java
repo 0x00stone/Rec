@@ -22,6 +22,10 @@ public interface MessageService {
 
     public void deleteMessage(String messageid);
 
+    List<Message> findByTalker(String talker);
+
+    List<Message> findUnreadByTalker();
+
 
  /*private Integer messageId;
     private Integer type;

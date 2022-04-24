@@ -37,6 +37,7 @@ public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
         DatagramPacket datagramPacket = (DatagramPacket) map.get("datagramPacket");
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_HANDSHAKE_3){
             String publicKey = (String)ctx.attr(AttributeKey.valueOf("publicKey")).get();
+            String id = DigestUtil.Sha1AndSha256(publicKey);
             String AES = RsaUtil.privateDecrypt(connection.getData(),AccountConfig.getPrivateKey());
             ctx.attr(AttributeKey.valueOf("aes")).set(AES);
 
@@ -45,12 +46,23 @@ public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
             routingTable.insert(new Node(new KademliaId(DigestUtil.Sha1AndSha256(publicKey)),connection.getIpv6(),
                     Integer.valueOf(connection.getPort()),publicKey,AES  ));
 
-            ConnectKey connectKey = new ConnectKey();
-            connectKey.setId(DigestUtil.Sha1AndSha256(publicKey));
-            connectKey.setAesKey(AES);
-            connectKey.setPublicKey(publicKey);
-            connectKey.setTimeStamp(System.currentTimeMillis());
-            connectKeyService.saveConnectKey(connectKey);
+            //TODO 判断是否存在连接密钥 ,存在更新,不存在创建
+            ConnectKey connectKey = connectKeyService.getConnectKey(id);
+            if(connectKey == null){
+                //创建连接密钥
+                connectKey = new ConnectKey();
+                connectKey.setId(DigestUtil.Sha1AndSha256(publicKey));
+                connectKey.setAesKey(AES);
+                connectKey.setPublicKey(publicKey);
+                connectKey.setTimeStamp(System.currentTimeMillis());
+                connectKeyService.saveConnectKey(connectKey);
+            }else {
+                //更新连接密钥
+                connectKey.setAesKey(AES);
+                connectKey.setTimeStamp(System.currentTimeMillis());
+                connectKeyService.updateConnectKey(connectKey);
+            }
+
 
             MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
                     .setOrder(connection.getOrder()+1)

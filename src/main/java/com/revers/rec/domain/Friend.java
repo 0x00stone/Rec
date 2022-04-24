@@ -1,6 +1,5 @@
 package com.revers.rec.domain;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,11 +11,12 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class ConnectKey implements Serializable {
-    private String Id;
-    private String publicKey;
-    private String aesKey;
-    private Integer order;
-    private Long timeStamp;
+public class Friend implements Serializable {
+
+    private String id;
+    private String myId;
+    private String friendPublicKey;
+    private String friendName;
+    private Long createTime;
 
 }

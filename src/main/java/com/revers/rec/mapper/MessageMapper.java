@@ -17,23 +17,26 @@ public interface MessageMapper {
     @SelectKey(statement = "SELECT seq messageId FROM sqlite_sequence WHERE (name = 'message')", before = false, keyProperty = "messageId", resultType = Integer.class)
     public boolean createMessage(Message message,String tableName);
 
-    @Update("update '${tableName}' set isRead = #{isRead} ,updateTime = #{updateTime} where messageId = #{messageId};")
+    @Update("update '${tableName}' set isRead = 1 ,updateTime = #{updateTime} where messageId = #{messageId};")
     public void readMessage(int messageId,Long updateTime,String tableName);
 
     @Select("select * from '${tableName}' ORDER BY messageId desc limit 20 ")
     public List<Message> findRecent(String tableName);
 
-    @Delete("delete from ${tableName} where messageId = #{messageId};")
-    public void deleteUser(Integer messageId);
+    @Delete("delete from '${tableName}' where messageId = #{messageId};")
+    public void deleteMessageId(String messageId,String tableName);
 
-    @Select("select * from ${tableName};")
-    public List<Message> findAll();
+    @Select("select * from '${tableName}';")
+    public List<Message> findAll(String tableName);
 
-    @Select("select * from ${tableName} where strTalker = #{strTalker};")
-    public List<Message> findByTalker(String strTalker);
+    @Select("select * from '${tableName}' where strTalker = #{strTalker} ORDER BY messageId desc;")
+    public List<Message> findByTalker(String strTalker,String tableName);
 
-    @Select("select * from ${tableName} where messageId = #{messageId};")
-    public Message findById(Integer messageId);
+    @Select("select * from '${tableName}' where messageId = #{messageId};")
+    public Message findById(Integer messageId,String tableName);
+
+    @Select("select * from '${tableName}' where isRead = 0 ORDER BY messageId desc;")
+    public List<Message> findUnreadByTalker(String tableName);
 
 
 

@@ -28,6 +28,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.SocketUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.crypto.BadPaddingException;
@@ -36,21 +37,30 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+@Slf4j
 public class ClientCommunicate implements Callable<Data> {
     @Autowired
     private RoutingTable routingTable;
     private Object[] objects = null;
+    boolean routingTableHasValue = true;
+
 
     public ClientCommunicate(Data data) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.routingTable = BeanContextUtil.getBean(RoutingTable.class);
 
         String dataString = JSON.toJSONString(data);
 
-        Node toNode = routingTable.findClosest(new KademliaId(DigestUtil.Sha1AndSha256(data.getDestPublicKey()))).get(0);
-        objects = new Object[5];
+        List<Node> closest = routingTable.findClosest(new KademliaId(DigestUtil.Sha1AndSha256(data.getDestPublicKey())));
+        if(closest.size() == 0 || closest == null) {
+            log.info("路由表中没有找到节点");
+            routingTableHasValue = false;
+            return;
+        }
+        Node toNode = closest.get(0);
         String aes = toNode.getAesKey();
 
 
@@ -65,15 +75,19 @@ public class ClientCommunicate implements Callable<Data> {
                 .setData(AesUtil.encrypt(aes, dataString))
                 .build();
 
+        objects = new Object[5];
         objects[0] = connection;
         objects[1] = toNode.getInetAddress();
         objects[2] = toNode.getPort();
         objects[3] = order;
         objects[4] = aes;
-
+        System.out.println(1);
     }
     @Override
     public Data call() throws Exception {
+        if(!routingTableHasValue){
+            return null;
+        }
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -99,7 +113,7 @@ public class ClientCommunicate implements Callable<Data> {
             ch.writeAndFlush(new DatagramPacket(
                     Unpooled.copiedBuffer(((MsgProtobuf.Connection)objects[0]).toByteArray()),
                     SocketUtils.socketAddress("127.0.0.1",30000))).sync();
-            System.out.println("已发送Ping消息");
+            System.out.println("已发送消息");
 
 
             if(!ch.closeFuture().await(optionConfig.getClientCommunicateRunTimeOut())){

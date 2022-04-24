@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ClientPingHandler extends SimpleChannelInboundHandler<DatagramPacket>{
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
-        log.info("channelRead0");
-        System.out.println(datagramPacket.toString());
+        log.info(datagramPacket.toString());
         MsgProtobuf.Connection connection = MsgProtobuf.Connection.parseFrom(datagramPacket.content().nioBuffer());
         channelHandlerContext.attr(AttributeKey.valueOf("msgType")).set(connection.getMsgType());
         channelHandlerContext.attr(AttributeKey.valueOf("order")).set(connection.getOrder());

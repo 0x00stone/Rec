@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 
@@ -17,11 +18,12 @@ import java.util.HashMap;
  * @author Revers.
  * @date 2022/04/19 23:11
  **/
+@Slf4j
 public class HandShakeClientHandler2 extends SimpleChannelInboundHandler<DatagramPacket> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
-        System.out.println(datagramPacket.toString());
+        log.info(datagramPacket.toString());
         MsgProtobuf.Connection connection = MsgProtobuf.Connection.parseFrom(datagramPacket.content().nioBuffer());
         HashMap<String,Object> map = new HashMap<>();
         map.put("connection",connection);

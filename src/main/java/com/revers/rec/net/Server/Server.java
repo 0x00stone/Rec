@@ -1,5 +1,6 @@
 package com.revers.rec.net.Server;
 
+import com.revers.rec.config.AccountConfig;
 import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Server.communicate.ServerCommunicateHandler;
@@ -17,10 +18,12 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
 import java.util.concurrent.Callable;
 
-public class Server implements Callable<Boolean> {
+public class Server implements Runnable {
 
     @Override
-    public Boolean call() {
+    public void run() {
+        System.out.println("==========================服务端已启动,监听"+optionConfig.getServerListenPort()+"端口中===========================");
+
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -42,19 +45,19 @@ public class Server implements Callable<Boolean> {
                         }
                     });
 
-            System.out.println("==========================服务端已启动,监听"+optionConfig.getServerListenPort()+"端口中===========================");
 
-            boolean isListening = false;
-            while (!isListening) {
-                try {
-                    b.bind(optionConfig.getServerListenPort()).sync().channel().closeFuture().await();
-                    isListening = true;
-                } catch (Exception e) {
-                    System.out.println("==========================端口" + optionConfig.getServerListenPort() + "已被占用===========================");
-                    optionConfig.setServerListenPort(optionConfig.getServerListenPort() + 1);
-                    System.out.println("==========================开启监听端口" + optionConfig.getServerListenPort() + "===========================");
+                boolean isBind = false;
+                while (!isBind) {
+                    try {
+                        AccountConfig.setIpv6Port(optionConfig.getServerListenPort());
+                        b.bind(optionConfig.getServerListenPort()).sync().channel().closeFuture().await();
+                    } catch (Exception e) {
+                        System.out.println("==========================端口" + optionConfig.getServerListenPort() + "已被占用===========================");
+                        optionConfig.setServerListenPort(optionConfig.getServerListenPort() + 1);
+                        System.out.println("==========================开启监听端口" + optionConfig.getServerListenPort() + "===========================");
+                    }
                 }
-            }
+
 
 
         } catch (Exception e){
@@ -62,7 +65,6 @@ public class Server implements Callable<Boolean> {
         }finally {
             group.shutdownGracefully();
             System.out.println("=============================服务端已关闭==============================");
-            return false;
         }
     }
 }

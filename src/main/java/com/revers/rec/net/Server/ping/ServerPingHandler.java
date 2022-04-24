@@ -16,7 +16,7 @@ import java.util.HashMap;
 public class ServerPingHandler extends SimpleChannelInboundHandler<DatagramPacket> {
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
-        System.out.println(datagramPacket.toString());
+        log.info(datagramPacket.toString());
         Connection connection = Connection.parseFrom(datagramPacket.content().nioBuffer());
         HashMap<String,Object> map = new HashMap<>();
         map.put("connection",connection);
