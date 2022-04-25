@@ -75,22 +75,6 @@ public class HandShakeClient implements Callable<ResultUtil> {
                             pipeline.addLast(new HandShakeClientHandler4());
                         }
                     });
-            /**TODO
-             * java.net.PortUnreachableException: null
-             * 	at sun.nio.ch.DatagramChannelImpl.receive0(Native Method) ~[?:?]
-             * 	at sun.nio.ch.DatagramChannelImpl.receiveIntoNativeBuffer(DatagramChannelImpl.java:750) ~[?:?]
-             * 	at sun.nio.ch.DatagramChannelImpl.receive(DatagramChannelImpl.java:728) ~[?:?]
-             * 	at sun.nio.ch.DatagramChannelImpl.receive(DatagramChannelImpl.java:543) ~[?:?]
-             * 	at io.netty.channel.socket.nio.NioDatagramChannel.doReadMessages(NioDatagramChannel.java:253) ~[netty-transport-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.channel.nio.AbstractNioMessageChannel$NioMessageUnsafe.read(AbstractNioMessageChannel.java:79) [netty-transport-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:722) [netty-transport-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:658) [netty-transport-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:584) [netty-transport-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:496) [netty-transport-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:986) [netty-common-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) [netty-common-4.1.74.Final.jar:4.1.74.Final]
-             * 	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) [netty-common-4.1.74.Final.jar:4.1.74.Final]
-             * 	at java.lang.Thread.run(Thread.java:833) [?:?]**/
             Channel ch= b.connect(HOST,PORT).sync().channel();
 
             DatagramPacket datagramPacket = new DatagramPacket(
@@ -107,13 +91,9 @@ public class HandShakeClient implements Callable<ResultUtil> {
             if((boolean)ch.attr(AttributeKey.valueOf("isSuccess")).get() == true){
                 return new ResultUtil(true,"连接成功");
             }
-        } catch (SocketException e){
-            log.error("SocketException",e);
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        } catch (Exception e){
-            e.printStackTrace();
-        }finally {
+        } finally {
             group.shutdownGracefully();
         }
         return new ResultUtil(false, "连接失败");
