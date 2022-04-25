@@ -16,10 +16,12 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.SocketUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+@Slf4j
 public final class ClientPing implements Callable<ResultUtil> {
     private static MsgProtobuf.Connection connection;
     private String HOST;
@@ -57,9 +59,11 @@ public final class ClientPing implements Callable<ResultUtil> {
                     });
             Channel ch= b.connect(HOST,PORT).sync().channel();
 
-            ch.writeAndFlush(new DatagramPacket(
+            DatagramPacket datagramPacket = new DatagramPacket(
                     Unpooled.copiedBuffer(connection.toByteArray()),
-                    SocketUtils.socketAddress(HOST,PORT))).sync();
+                    SocketUtils.socketAddress(HOST, PORT));
+            ch.writeAndFlush(datagramPacket).sync();
+            log.info(datagramPacket.toString());
             System.out.println("已发送Ping消息");
 
             if(!ch.closeFuture().await(optionConfig.getClientClientPingRunTimeOut())){

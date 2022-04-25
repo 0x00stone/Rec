@@ -6,6 +6,7 @@ import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.cli.Menu;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.domain.Connect;
 import com.revers.rec.domain.ConnectKey;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.Friend;
@@ -82,32 +83,59 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
 
                     //发送回复
                     Data dataResponse = new Data();
+                    dataResponse.setDestPublicKey(srcPublicKey);
+                    dataResponse.setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(),srcPublicKey));
                     dataResponse.setData(RsaUtil.publicEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,srcPublicKey));
                     dataResponse.setSignature(RsaUtil.privateEncrypt(ConstantUtil.COMMUNICATE_SUCCESS,AccountConfig.getPrivateKey()));
                     String dataResponseJSON = JSON.toJSONString(dataResponse);
 
+                    Connect connectResponse = new Connect();
+                    connectResponse.setConnectOrder(connection.getOrder() + 1);
+                    connectResponse.setConnectMsgType(ConstantUtil.MSGTYPE_COMMUNICATE);
+                    connectResponse.setConnectData(AesUtil.encrypt(AES,dataResponseJSON));
+                    connectResponse.setConnectTimestamp(System.currentTimeMillis());
+
                     MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
-                            .setData(AesUtil.encrypt(AES,dataResponseJSON))
-                            .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
+                            .setOrder(connectResponse.getConnectOrder())
+                            .setData(connectResponse.getConnectData())
+                            .setMsgType(connectResponse.getConnectMsgType())
+                            .setTimestamp(connectResponse.getConnectTimestamp())
+                            .setSignature(connectResponse.getSignature())
                             .build();
 
-                    ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
-                            connectionResponse.toByteArray()),datagramPacket.sender()));
+                    DatagramPacket datagramPacketResponse = new DatagramPacket(Unpooled.copiedBuffer(
+                            connectionResponse.toByteArray()), datagramPacket.sender());
+                    ctx.writeAndFlush(datagramPacketResponse);
+                    log.info(datagramPacketResponse.toString());
 
                 }else {
                     //收到的消息不是自己的消息
-                    Data dataResponse = ClientOperation.communicate(data);
+                    data.getDestPublicKey();
 
+
+                    Data dataResponse = ClientOperation.communicate(data);
 
                     String dataResponseJSON = JSON.toJSONString(dataResponse);
 
+                    Connect connectResponse = new Connect();
+                    connectResponse.setConnectOrder(connection.getOrder() + 1);
+                    connectResponse.setConnectMsgType(ConstantUtil.MSGTYPE_COMMUNICATE);
+                    connectResponse.setConnectData(AesUtil.encrypt(AES,dataResponseJSON));
+                    connectResponse.setConnectTimestamp(System.currentTimeMillis());
+
                     MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
-                            .setData(AesUtil.encrypt(AES,dataResponseJSON))
-                            .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
+                            .setData(connectResponse.getConnectData())
+                            .setMsgType(connectResponse.getConnectMsgType())
+                            .setOrder(connectResponse.getConnectOrder())
+                            .setTimestamp(connectResponse.getConnectTimestamp())
+                            .setSignature(connectResponse.getSignature())
                             .build();
 
-                    ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
-                            connectionResponse.toByteArray()),datagramPacket.sender()));
+                    DatagramPacket datagramPacketResponse = new DatagramPacket(Unpooled.copiedBuffer(
+                            connectionResponse.toByteArray()), datagramPacket.sender());
+                    log.info(datagramPacketResponse.toString());
+                    ctx.writeAndFlush(datagramPacketResponse);
+
                 }
             }
         }else {

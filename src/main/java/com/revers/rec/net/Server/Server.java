@@ -7,6 +7,7 @@ import com.revers.rec.net.Server.communicate.ServerCommunicateHandler;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler1;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler3;
 import com.revers.rec.net.Server.ping.ServerPingHandler;
+import com.revers.rec.net.Server.signature.SignatureMatchHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -39,6 +40,7 @@ public class Server implements Runnable {
                             pipeline.addLast(new ProtobufVarint32LengthFieldPrepender());
                             pipeline.addLast(new ProtobufEncoder());
                             pipeline.addLast(new ServerPingHandler());
+                            pipeline.addLast(new SignatureMatchHandler());
                             pipeline.addLast(new HandShakeServerHandler1());
                             pipeline.addLast(new HandShakeServerHandler3());
                             pipeline.addLast(new ServerCommunicateHandler());

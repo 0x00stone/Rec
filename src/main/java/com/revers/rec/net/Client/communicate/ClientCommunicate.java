@@ -6,8 +6,10 @@ import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.config.optionConfig;
+import com.revers.rec.domain.Connect;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
+import com.revers.rec.net.Client.SignatureMatchHandler;
 import com.revers.rec.net.Client.ping.ClientPingHandler;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
@@ -64,16 +66,24 @@ public class ClientCommunicate implements Callable<Data> {
         Node toNode = closest.get(0);
         String aes = toNode.getAesKey();
 
-
         Long order = new Random().nextLong();
+
+        Connect connectRequest = new Connect();
+        connectRequest.setConnectSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(), toNode.getPublicKey()));
+        connectRequest.setConnectDestPublicKey(toNode.getPublicKey());
+        connectRequest.setConnectOrder(order);
+        connectRequest.setConnectMsgType(ConstantUtil.MSGTYPE_COMMUNICATE);
+        connectRequest.setConnectData(AesUtil.encrypt(aes, dataString));
+        connectRequest.setConnectTimestamp(System.currentTimeMillis());
+
         MsgProtobuf.Connection connection = MsgProtobuf.Connection.newBuilder()
-                .setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(), toNode.getPublicKey()))
-                .setDestPublicKey(toNode.getPublicKey())
-                .setOrder(order)
-                .setMsgType(ConstantUtil.MSGTYPE_COMMUNICATE)
-                .setSignature(RsaUtil.privateEncrypt(Sha256Util.getSHA256(dataString), AccountConfig.getPrivateKey()))
-                .setTimestamp(System.currentTimeMillis())
-                .setData(AesUtil.encrypt(aes, dataString))
+                .setSrcPublicKey(connectRequest.getConnectSrcPublicKey())
+                .setDestPublicKey(connectRequest.getConnectDestPublicKey())
+                .setOrder(connectRequest.getConnectOrder())
+                .setMsgType(connectRequest.getConnectMsgType())
+                .setTimestamp(connectRequest.getConnectTimestamp())
+                .setData(connectRequest.getConnectData())
+                .setSignature(connectRequest.getSignature())
                 .build();
 
         objects = new Object[5];
@@ -102,6 +112,7 @@ public class ClientCommunicate implements Callable<Data> {
                             pipeline.addFirst(new ProtobufDecoder(MsgProtobuf.Connection.getDefaultInstance()));
                             pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
                             pipeline.addFirst(new ProtobufEncoder());
+                            pipeline.addLast(new SignatureMatchHandler());
                             pipeline.addLast(new ClientCommunicateHandler());
                         }
                     });
@@ -123,11 +134,9 @@ public class ClientCommunicate implements Callable<Data> {
             }
             while (ch.attr(AttributeKey.valueOf("data")).get() == null){}
 
-            if(ch.attr(AttributeKey.valueOf("data")).get() != null){
-                Data data = new Data();
-                data.setData((String) ch.attr(AttributeKey.valueOf("data")).get());
-                return data;
-            }
+
+            return (Data) ch.attr(AttributeKey.valueOf("data")).get();
+
         }catch (InterruptedException e) {
             e.printStackTrace();
         } finally {

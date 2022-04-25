@@ -24,7 +24,6 @@ public class Menu {
         System.out.println("+ -- --=[   /sf <好友名称>                      向好友发送信息                       ]");
         System.out.println("+ -- --=[   /sa <对方公钥>                      向陌生人发送信息                      ]");
         System.out.println("-------------------------------------------------------------------------------");
-        printTips();
     }
 
     public static void printTips(){

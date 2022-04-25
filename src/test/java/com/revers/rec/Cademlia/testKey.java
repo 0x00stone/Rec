@@ -1,4 +1,3 @@
-/*
 package com.revers.rec.Cademlia;
 
 import com.revers.rec.Kademlia.Node.KademliaId;
@@ -22,9 +21,9 @@ public class testKey {
         System.out.println(id0.getDistance(id2));
         System.out.println(id0.getDistance(id3));
         KeyComparator comparator = new KeyComparator(id1);
-        System.out.println(comparator.compare(new Node(id0,"",0,""),new Node(id4,"",0,"")));
-        System.out.println(comparator.compare(new Node(id4,"",0,""),new Node(id3,"",0,"")));
-        System.out.println(comparator.compare(new Node(id0,"",0,""),new Node(id2,"",0,"")));
+        System.out.println(comparator.compare(new Node(id0,"",0,"",""),new Node(id4,"",0,"","")));
+        System.out.println(comparator.compare(new Node(id4,"",0,"",""),new Node(id3,"",0,"","")));
+        System.out.println(comparator.compare(new Node(id0,"",0,"",""),new Node(id2,"",0,"","")));
         System.out.println(id1.getInt());
         System.out.println(id2.getInt());
         System.out.println(id3.getInt());
@@ -34,4 +33,3 @@ public class testKey {
 
 
 }
-*/

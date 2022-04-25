@@ -42,8 +42,10 @@ public class ServerPingHandler extends SimpleChannelInboundHandler<DatagramPacke
             }
 
             log.info("接收到来自 " + datagramPacket.sender() + " 的ping消息");
-            channelHandlerContext.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
-                    connectionResponse.toByteArray()),datagramPacket.sender()));
+            DatagramPacket datagramPacketResponse = new DatagramPacket(Unpooled.copiedBuffer(
+                    connectionResponse.toByteArray()), datagramPacket.sender());
+            channelHandlerContext.writeAndFlush(datagramPacketResponse);
+            log.info(datagramPacketResponse.toString());
         }else {
             channelHandlerContext.fireChannelRead(map);
         }

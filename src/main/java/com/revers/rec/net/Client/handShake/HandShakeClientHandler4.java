@@ -13,6 +13,7 @@ import com.revers.rec.util.cypher.DigestUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import java.util.HashMap;
  * @author Revers.
  * @date 2022/04/19 23:11
  **/
+@Slf4j
 public class HandShakeClientHandler4 extends ChannelInboundHandlerAdapter {
     @Autowired
     private RoutingTable routingTable;
@@ -30,7 +32,6 @@ public class HandShakeClientHandler4 extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         HashMap<String, Object> map = (HashMap<String, Object>) msg;
         MsgProtobuf.Connection connection = (MsgProtobuf.Connection) map.get("connection");
-
 
         if(connection.getMsgType() == ConstantUtil.MSGTYPE_HANDSHAKE_4){
             String publicKey = (String)ctx.attr(AttributeKey.valueOf("publicKey")).get();

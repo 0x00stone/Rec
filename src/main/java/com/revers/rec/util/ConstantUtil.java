@@ -12,6 +12,7 @@ public class ConstantUtil {
     public static final Integer MSGTYPE_HANDSHAKE_2 = 3;
     public static final Integer MSGTYPE_HANDSHAKE_3 = 4;
     public static final Integer MSGTYPE_HANDSHAKE_4 = 5;
+    public static final Integer FAILURE_SIGNATURE_MISMATCH = 7;
 
     //ClientCommunicate
     public static final String COMMUNICATE_SUCCESS = "060";

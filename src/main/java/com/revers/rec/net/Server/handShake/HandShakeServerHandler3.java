@@ -5,6 +5,7 @@ import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.ConnectKey;
+import com.revers.rec.domain.Connect;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.service.connectKey.ConnectKeyService;
 import com.revers.rec.util.BeanContextUtil;
@@ -17,6 +18,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import java.util.HashMap;
  * @author Revers.
  * @date 2022/04/19 23:49
  **/
+@Slf4j
 public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
     @Autowired
     private RoutingTable routingTable;
@@ -63,17 +66,28 @@ public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
                 connectKeyService.updateConnectKey(connectKey);
             }
 
+            Connect connectResponse = new Connect();
+            connectResponse.setConnectOrder(connection.getOrder()+1);
+            connectResponse.setConnectMsgType(ConstantUtil.MSGTYPE_HANDSHAKE_4);
+            connectResponse.setConnectData(AesUtil.encrypt(AES,"success"));
+            connectResponse.setConnectIpv6Ip(AccountConfig.getIpv6());
+            connectResponse.setConnectIpv6Port(String.valueOf(AccountConfig.getIpv6Port()));
+            connectResponse.setConnectTimestamp(System.currentTimeMillis());
 
             MsgProtobuf.Connection connectionResponse = MsgProtobuf.Connection.newBuilder()
-                    .setOrder(connection.getOrder()+1)
-                    .setMsgType(ConstantUtil.MSGTYPE_HANDSHAKE_4)
-                    .setData(AesUtil.encrypt(AES,"success"))
-                    .setIpv6(AccountConfig.getIpv6())
-                    .setPort(String.valueOf(AccountConfig.getIpv6Port()))
+                    .setOrder(connectResponse.getConnectOrder())
+                    .setMsgType(connectResponse.getConnectMsgType())
+                    .setData(connectResponse.getConnectData())
+                    .setIpv6(connectResponse.getConnectIpv6Ip())
+                    .setPort(connectResponse.getConnectIpv6Port())
+                    .setTimestamp(connectResponse.getConnectTimestamp())
+                    .setSignature(connectResponse.getSignature())
                     .build();
 
-            ctx.writeAndFlush(new DatagramPacket(Unpooled.copiedBuffer(
-                    connectionResponse.toByteArray()),datagramPacket.sender()));
+            DatagramPacket datagramPacketResponse = new DatagramPacket(Unpooled.copiedBuffer(
+                    connectionResponse.toByteArray()), datagramPacket.sender());
+            ctx.writeAndFlush(datagramPacketResponse);
+            log.info(datagramPacketResponse.toString());
         }else {
             super.channelRead(ctx, msg);
         }

@@ -45,6 +45,7 @@ public class testServer {
         AccountConfig.setId(DigestUtil.Sha1AndSha256(publicKey));
         AccountConfig.setPublicKey(publicKey);
         AccountConfig.setPrivateKey(privateKey);
+        AccountConfig.setAeskey(aes);
         AccountConfig.setIpv6("127.0.0.1");
 
         new Thread(new Server()).start();

@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Sha256Util {
+
     /**
      * 利用java原生的类实现SHA256加密
      *
