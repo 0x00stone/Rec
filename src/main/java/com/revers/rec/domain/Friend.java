@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.ImageView;
 import java.io.Serializable;
 
 @Component
@@ -18,5 +19,10 @@ public class Friend implements Serializable {
     private String friendPublicKey;
     private String friendName;
     private Long createTime;
+    private String groupId;
+    private String portrait; // 头像
+    private String sign;
+    private String friendId;
+    private String status;
 
 }

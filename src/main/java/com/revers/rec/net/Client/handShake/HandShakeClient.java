@@ -5,6 +5,7 @@ import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.Connect;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.SignatureMatchHandler;
+import com.revers.rec.net.TimeStampHandler;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.ResultUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Time;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -71,6 +73,7 @@ public class HandShakeClient implements Callable<ResultUtil> {
                             pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
                             pipeline.addFirst(new ProtobufEncoder());
                             pipeline.addLast(new SignatureMatchHandler());
+                            pipeline.addLast(new TimeStampHandler());
                             pipeline.addLast(new HandShakeClientHandler2());
                             pipeline.addLast(new HandShakeClientHandler4());
                         }
@@ -92,6 +95,7 @@ public class HandShakeClient implements Callable<ResultUtil> {
                 return new ResultUtil(true,"连接成功");
             }
         } catch (InterruptedException e) {
+            System.out.println("对方拒绝连接");
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();

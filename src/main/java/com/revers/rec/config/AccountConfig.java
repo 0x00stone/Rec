@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Repository;
 
 
+
 @Configuration
 public class AccountConfig {
     private static String id; //hash(publicKey)
@@ -17,9 +18,27 @@ public class AccountConfig {
     private static String ipv6; //RecApplication 添加
     @Value("${rec.config.listingPort}")
     private static Integer ipv6Port; // 配置 添加
-    private static boolean status; //状态, true 在线 , false 离线
+    private static String status; //状态, true 在线 , false 离线
+    private static String sign;
+    private static String portrait; //头像
 
     private static String aeskey; // 数据库加密用的key
+
+    public static String getSign() {
+        return sign;
+    }
+
+    public static void setSign(String sign) {
+        AccountConfig.sign = sign;
+    }
+
+    public static String getPortrait() {
+        return portrait;
+    }
+
+    public static void setPortrait(String portrait) {
+        AccountConfig.portrait = portrait;
+    }
 
     public static String getId() {
         return id;
@@ -77,11 +96,11 @@ public class AccountConfig {
         AccountConfig.ipv6Port = ipv6Port;
     }
 
-    public static boolean isStatus() {
+    public static String getStatus() {
         return status;
     }
 
-    public static void setStatus(boolean status) {
+    public static void setStatus(String status) {
         AccountConfig.status = status;
     }
 

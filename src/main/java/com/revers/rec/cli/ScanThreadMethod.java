@@ -186,7 +186,7 @@ public class ScanThreadMethod {
                     if(communicate != null && communicate.getFlag()){
                         if(ConstantUtil.COMMUNICATE_SUCCESS.equals(((Data)communicate.getData()).getData())){
                             //存储消息
-                            messageService.saveMessage(content,toPublicKey,false);
+                            messageService.saveMessage(content,toPublicKey,true);
 
                             log.info("已接收");
                         }else {

@@ -7,7 +7,8 @@ import com.revers.rec.net.Server.communicate.ServerCommunicateHandler;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler1;
 import com.revers.rec.net.Server.handShake.HandShakeServerHandler3;
 import com.revers.rec.net.Server.ping.ServerPingHandler;
-import com.revers.rec.net.Server.signature.SignatureMatchHandler;
+import com.revers.rec.net.Server.handler.SignatureMatchHandler;
+import com.revers.rec.net.TimeStampHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,7 +18,7 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
-import java.util.concurrent.Callable;
+import java.sql.Time;
 
 public class Server implements Runnable {
 
@@ -41,6 +42,7 @@ public class Server implements Runnable {
                             pipeline.addLast(new ProtobufEncoder());
                             pipeline.addLast(new ServerPingHandler());
                             pipeline.addLast(new SignatureMatchHandler());
+                            pipeline.addLast(new TimeStampHandler());
                             pipeline.addLast(new HandShakeServerHandler1());
                             pipeline.addLast(new HandShakeServerHandler3());
                             pipeline.addLast(new ServerCommunicateHandler());

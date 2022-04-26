@@ -33,4 +33,7 @@ public interface FriendMapper {
 
     @Update("UPDATE friend SET friendPublicKey = #{friendPublicKey} , friendName = #{friendName} , 'createTime' = #{createTime}  WHERE id = #{id}")
     public void updateFriend(Friend friend);
+
+    @Update("UPDATE friend set groupId = #{groupId} where id = #{id}")
+    public void updateGroupId(Friend friend);
 }

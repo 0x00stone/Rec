@@ -11,6 +11,7 @@ import com.revers.rec.domain.Data;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.SignatureMatchHandler;
 import com.revers.rec.net.Client.ping.ClientPingHandler;
+import com.revers.rec.net.TimeStampHandler;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.ResultUtil;
@@ -36,7 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
 import java.net.PortUnreachableException;
+import java.net.SocketException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -113,6 +116,7 @@ public class ClientCommunicate implements Callable<Data> {
                             pipeline.addFirst(new ProtobufVarint32LengthFieldPrepender());
                             pipeline.addFirst(new ProtobufEncoder());
                             pipeline.addLast(new SignatureMatchHandler());
+                            pipeline.addLast(new TimeStampHandler());
                             pipeline.addLast(new ClientCommunicateHandler());
                         }
                     });
@@ -137,7 +141,11 @@ public class ClientCommunicate implements Callable<Data> {
 
             return (Data) ch.attr(AttributeKey.valueOf("data")).get();
 
+        }catch (NullPointerException e){
+            System.out.println("NullPointerException");
+            e.printStackTrace();
         }catch (InterruptedException e) {
+            System.out.println("对方拒绝连接");
             e.printStackTrace();
         } finally {
             group.shutdownGracefully();

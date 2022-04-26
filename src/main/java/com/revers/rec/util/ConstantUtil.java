@@ -19,6 +19,9 @@ public class ConstantUtil {
     public static final String COMMUNICATE_FAILURE = "061";
     public static final Integer MSGTYPE_COMMUNICATE = 6;
 
+    //TimeStamp_FAILURE
+    public static final Integer FAILURE_TIMESTAMP = 8;
+
 
 
 

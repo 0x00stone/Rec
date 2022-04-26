@@ -1,4 +1,4 @@
-package com.revers.rec.net.Server.signature;
+package com.revers.rec.net.Server.handler;
 
 import com.revers.rec.domain.Connect;
 import com.revers.rec.domain.protobuf.MsgProtobuf;

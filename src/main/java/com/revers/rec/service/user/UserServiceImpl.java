@@ -52,8 +52,10 @@ public class UserServiceImpl implements UserService {
             accountConfig.setUsername(user.getUsername());
             accountConfig.setPublicKey(user.getPublicKey());
             accountConfig.setPrivateKey(user.getPrivateKey());
-            accountConfig.setStatus(user.isStatus());
+            accountConfig.setStatus(user.getStatus());
             accountConfig.setAeskey(deVigenere(user.getAeskey(), getSHA256(password)));
+            accountConfig.setSign(user.getSign());
+            accountConfig.setPortrait(user.getPortrait());
             resultUtil.setFlag(true);
             resultUtil.setMsg("用户: " + username + " 已登录");
             resultUtil.setData(user);

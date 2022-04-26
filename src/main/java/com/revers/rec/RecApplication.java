@@ -31,12 +31,12 @@ public class RecApplication implements CommandLineRunner {
         new BeanContextUtil().setApplicationContext(run);;
 
 
-        Login login = new Login();
-        login.run();
+//        Login login = new Login();
+//        login.run();
 //        测试阶段默认登录a1
-//        UserServiceImpl userService;
-//        userService = BeanContextUtil.getBean(UserServiceImpl.class);
-//        log.info(userService.login("a1", "123456").getMsg());
+        UserServiceImpl userService;
+        userService = BeanContextUtil.getBean(UserServiceImpl.class);
+        log.info(userService.login("a1", "123456").getMsg());
 
         new Thread(new Server()).start();
 

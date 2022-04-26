@@ -21,9 +21,15 @@
 1 a1 -> a3 -> a2 a3 ClientCommunicateHandler String data = RsaUtil.privateDecrypt(responseData.getData(), AccountConfig.getPrivateKey());报错 
 1 签名
 
+# 4.27
+前端添加聊天记录
+前端添加好友
+前端发送消息
+前端接收消息
+
+
 顺序
 时间戳
 不在线时存储在相邻节点
 
-图形界面 
 公钥设置为qr码或一键复制
