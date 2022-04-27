@@ -21,6 +21,24 @@ public class ConstantUtil {
 
     //TimeStamp_FAILURE
     public static final Integer FAILURE_TIMESTAMP = 8;
+    
+    //前端相关
+    public static final Integer SUCCESS = 0;
+    public static final Integer ERROR = 1;
+    public static final String LOGGIN_SUCCESS = "登陆成功";
+    public static final String LOGGIN_FAIL = "登陆失败";
+    public static final String NONACTIVED = "用户未激活";
+    public static final String REGISTER_SUCCESS = "注册成功";
+    public static final String REGISTER_FAIL = "登陆失败";
+    public static final String SUCCESS_MESSAGE = "操作成功";
+    public static final String ERROR_MESSAGE = "操作失败";
+    public static final String UPLOAD_SUCCESS = "上传成功";
+    public static final String UPLOAD_FAIL = "上传失败";
+    public static final String IMAGE_PATH = "/upload/image/";
+    public static final String FILE_PATH = "/upload/file/";
+    public static final String AVATAR_PATH = "/static/image/avatar/";
+    public static final String GROUP_AVATAR_PATH = "/static/image/group/";
+    public static final String DEFAULT_GROUP_NAME = "我的好友";
 
 
 

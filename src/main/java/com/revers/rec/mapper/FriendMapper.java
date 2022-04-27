@@ -9,12 +9,12 @@ import java.util.List;
 @Mapper
 public interface FriendMapper {
 
-    @Insert("INSERT INTO friend(myId , friendPublicKey , friendName ,createTime) VALUES (#{myId}, #{friendPublicKey} , #{friendName} , #{createTime})")
+    @Insert("INSERT INTO friend(myId , friendPublicKey , friendName ,createTime,groupId) VALUES (#{myId}, #{friendPublicKey} , #{friendName} , #{createTime} , #{groupId})")
     @SelectKey(statement = "SELECT HEX(RANDOMBLOB(16)) as id;", before = true, keyProperty = "id", keyColumn = "id",resultType = String.class)
     public void insertFriend(Friend friend);
 
-    @Delete("DELETE FROM friend WHERE id = #{id}")
-    public void deleteFriend(String id);
+    @Delete("DELETE FROM friend WHERE myId = #{myId} and friendId = #{friendId}")
+    public void deleteFriendByFriendId(String myId,String FriendId);
 
     @Select("SELECT * FROM friend WHERE id = #{id}")
     public Friend findFriendById(String id);
@@ -25,9 +25,6 @@ public interface FriendMapper {
     @Select("SELECT * FROM friend WHERE friendName = #{friendName}")
     public Friend findFriendByName(String friendName);
 
-    @Delete("DELETE FROM friend WHERE friendName = #{friendName}")
-    public void deleteFriendByName(String friendName);
-
     @Select("SELECT * FROM friend WHERE myId = #{myId}")
     public List<Friend> findAllFriend(String myId);
 
@@ -36,4 +33,7 @@ public interface FriendMapper {
 
     @Update("UPDATE friend set groupId = #{groupId} where id = #{id}")
     public void updateGroupId(Friend friend);
+
+    @Update("UPDATE friend set groupId = #{groupId} where friendId = #{friendId}")
+    public boolean changeGroup(String friendId,String groupId);
 }

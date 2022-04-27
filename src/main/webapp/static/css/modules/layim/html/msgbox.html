@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>消息盒子</title>
 
-<link rel="stylesheet" href="../../../layui.css?v=1">
+<link rel="stylesheet" href="/static/css/layui.css">
 <style>
 .layim-msgbox{margin: 15px;}
 .layim-msgbox li{position: relative; margin-bottom: 10px; padding: 0 130px 10px 60px; padding-bottom: 10px; line-height: 22px; border-bottom: 1px dotted #e2e2e2;}
@@ -32,7 +32,7 @@
   <br>该模版文件所在目录（相对于layui.js）：/css/modules/layim/html/msgbox.html</blockquote>
 </div>
 
-<textarea title="消息模版" id="LAY_tpl" style="display:none;">
+<textarea title="消息模版" id="LAY_tpl" >
 {{# layui.each(d.data, function(index, item){
   if(item.from){ }}
     <li data-uid="{{ item.from }}" data-fromGroup="{{ item.from_group }}">
@@ -65,7 +65,7 @@
 -->
 
 
-<script src="../../../../layui.js?v=1"></script>
+<script src="/static/layui.js"></script>
 <script>
 layui.use(['layim', 'flow'], function(){
   var layim = layui.layim

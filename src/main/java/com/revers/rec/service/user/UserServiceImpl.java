@@ -4,14 +4,13 @@ import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.User;
 import com.revers.rec.mapper.UserMapper;
 import com.revers.rec.service.table.MessageTableService;
-import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.ConstantUtil;
+import com.revers.rec.util.Result;
 import com.revers.rec.util.cypher.DigestUtil;
 import com.revers.rec.util.cypher.RsaUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -38,14 +37,14 @@ public class UserServiceImpl implements UserService {
 
     // 从 数据库中查找 username 用户并放入accountConfig账户配置中
     @Override
-    public ResultUtil login(String username, String password) {
+    public Result login(String username, String password) {
         log.info("Service: " + username + "登录");
-        ResultUtil resultUtil = new ResultUtil();
+        Result result = new Result();
 
         User user = userMapper.findUserByUsername(username);
         if (user == null) {
-            resultUtil.setFlag(false);
-            resultUtil.setMsg("数据库中无 username 为 " + username + " 的用户");
+            result.setFlag(ConstantUtil.ERROR);
+            result.setMsg("数据库中无 username 为 " + username + " 的用户");
             log.info("数据库中无 username 为 " + username + " 的用户");
         } else {
             accountConfig.setId(user.getId());
@@ -56,25 +55,22 @@ public class UserServiceImpl implements UserService {
             accountConfig.setAeskey(deVigenere(user.getAeskey(), getSHA256(password)));
             accountConfig.setSign(user.getSign());
             accountConfig.setPortrait(user.getPortrait());
-            resultUtil.setFlag(true);
-            resultUtil.setMsg("用户: " + username + " 已登录");
-            resultUtil.setData(user);
+            result.setFlag(ConstantUtil.SUCCESS);
+            result.setMsg("用户: " + username + " 已登录");
+            result.setData(user);
             log.info("用户: " + username + " 已登录");
             log.info("用户信息 : " + accountConfig);
         }
-        return resultUtil;
+        return result;
     }
 
-
-
-    @Transactional
     @Override
-    public ResultUtil register(String username, String password) throws NoSuchAlgorithmException {
+    public Result register(String username, String password) throws NoSuchAlgorithmException {
         log.info("Service: " + username + "注册");
-        ResultUtil resultUtil = new ResultUtil();
+        Result result = new Result();
         if (userMapper.findUserByUsername(username) != null ){
-            resultUtil.setFlag(false);
-            resultUtil.setMsg(username + " 用户已存在");
+            result.setFlag(ConstantUtil.ERROR);
+            result.setMsg(username + " 用户已存在");
             log.info(username + " 用户已存在");
         }else {
             Map<String, String> rsaKey = RsaUtil.createKeys(4096);
@@ -89,9 +85,11 @@ public class UserServiceImpl implements UserService {
             System.out.println(userMapper.createUser(user));
 
 
-            resultUtil.setFlag(true);
-            resultUtil.setMsg(username + " 注册成功");
+            result.setFlag(ConstantUtil.SUCCESS);
+            result.setMsg(username + " 注册成功");
         }
-        return resultUtil;
+        return result;
     }
+
+
 }

@@ -8,8 +8,9 @@ public interface FriendService {
 
     public void addFriend(String friendPublicKey,String friendName);
 
-    public void deleteFriendByName(String friendName);
+    void addFriend(String friendName, String friendPublicKey, String groupId);
 
+    void deleteFriendById(String friendId);
 
     Friend findFriendByName(String friendName);
 
@@ -18,4 +19,6 @@ public interface FriendService {
     void updateFriend(String id, String friendPublicKey, String friendName);
 
     Friend findFriendByFriendPublicKey(String friendPublicKey);
+
+    Boolean changeGroup(String friendId, String groupId);
 }

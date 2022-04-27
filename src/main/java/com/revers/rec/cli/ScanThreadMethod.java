@@ -12,16 +12,11 @@ import com.revers.rec.service.friend.FriendService;
 import com.revers.rec.service.message.MessageService;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.Result;
 import com.revers.rec.util.cypher.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -103,7 +98,7 @@ public class ScanThreadMethod {
             @Override
             public void run() {
                 try {
-                    if(ClientOperation.handShake(ip, Integer.valueOf(port)).getFlag()){
+                    if(ClientOperation.handShake(ip, Integer.valueOf(port)).getFlag() == ConstantUtil.SUCCESS){
                         log.info("握手成功");
                     }else {
                         log.info("握手失败");
@@ -180,10 +175,10 @@ public class ScanThreadMethod {
 
             @Override
             public void run() {
-                ResultUtil communicate = null;
+                Result communicate = null;
                 try {
                     communicate = ClientOperation.communicate(toPublicKey, content);
-                    if(communicate != null && communicate.getFlag()){
+                    if(communicate != null && communicate.getFlag() == ConstantUtil.SUCCESS){
                         if(ConstantUtil.COMMUNICATE_SUCCESS.equals(((Data)communicate.getData()).getData())){
                             //存储消息
                             messageService.saveMessage(content,toPublicKey,true);

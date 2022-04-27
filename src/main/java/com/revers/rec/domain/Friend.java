@@ -14,15 +14,15 @@ import java.io.Serializable;
 @ToString
 public class Friend implements Serializable {
 
-    private String id;
-    private String myId;
-    private String friendPublicKey;
-    private String friendName;
-    private Long createTime;
-    private String groupId;
-    private String portrait; // 头像
-    private String sign;
-    private String friendId;
-    private String status;
+    private String id = "";
+    private String myId = "";
+    private String friendPublicKey = "";
+    private String friendName = "";
+    private Long createTime = 0L;
+    private String groupId = "";
+    private String portrait = ""; // 头像
+    private String sign = "";
+    private String friendId = "";
+    private String status = "";
 
 }

@@ -1,8 +1,8 @@
 package com.revers.rec.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.revers.rec.service.user.UserServiceImpl;
-import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.ConstantUtil;
+import com.revers.rec.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,9 +33,9 @@ public class UserController {
             return new ModelAndView("error",data);
         }
 
-        ResultUtil flag = userService.register(username, password);
+        Result flag = userService.register(username, password);
         data.put("msg",flag.getMsg());
-        if (flag.getFlag()) {
+        if (flag.getFlag() == ConstantUtil.SUCCESS) {
             return new ModelAndView("success",data);
         } else {
             return new ModelAndView("error",data);
@@ -44,6 +43,7 @@ public class UserController {
     }
 
     @RequestMapping("/login")
+    @ResponseBody
     public ModelAndView login(String username, String password){
         log.info("用户: " + username + "登录");
 
@@ -53,9 +53,9 @@ public class UserController {
             return new ModelAndView("error",data);
         }
 
-        ResultUtil flag = userService.login(username,password);
+        Result flag = userService.login(username,password);
         data.put("msg",flag.getMsg());
-        if (flag.getFlag()) {
+        if (flag.getFlag() == ConstantUtil.SUCCESS) {
             return new ModelAndView("success",data);
         } else {
             return new ModelAndView("error",data);
@@ -70,5 +70,7 @@ public class UserController {
     private boolean isEmpty(String username,String password){
         return "".equals(username) || "".equals(password);
     }
+
+
 
 }

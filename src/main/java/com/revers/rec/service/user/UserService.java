@@ -1,13 +1,14 @@
 package com.revers.rec.service.user;
 
-import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.Result;
 
 import java.security.NoSuchAlgorithmException;
 
 public interface UserService {
 
-    public ResultUtil login(String username, String password);
+    public Result login(String username, String password);
 
 
-    public ResultUtil register(String username, String password) throws NoSuchAlgorithmException;
+    public Result register(String username, String password) throws NoSuchAlgorithmException;
+
 }

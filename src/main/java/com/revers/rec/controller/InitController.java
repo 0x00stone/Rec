@@ -34,14 +34,7 @@ public class InitController {
     public String loadInitPage() {
 
         HashMap<String,JsonGroup> groupMap = new HashMap<>();// <id,jsGroup[]>
-        /**
-         * JsonGroup group1 = new JsonGroup();
-         group1.setId("group1");
-         group1.setGroupname("我的好友");
-         group1.setOnline("2");
-         group1.getList().add(user1);
-         group1.getList().add(user2);
-         **/
+
         Group stranger = groupService.findGroupByName("陌生人");
         if(stranger == null){
             groupService.insertGroup("陌生人");
@@ -73,7 +66,7 @@ public class InitController {
         JsonUser mine = new JsonUser();
         mine.setUsername(AccountConfig.getUsername());
         mine.setId(AccountConfig.getId());
-        mine.setAvatar("https://avatars0.githubusercontent.com/u/8186664?s=460&v=4");
+        mine.setAvatar(AccountConfig.getPortrait());
         mine.setSign(AccountConfig.getSign());
         mine.setStatus(AccountConfig.getStatus());
 

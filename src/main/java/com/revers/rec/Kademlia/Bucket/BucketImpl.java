@@ -2,7 +2,8 @@ package com.revers.rec.Kademlia.Bucket;
 
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.net.Client.ClientOperation;
-import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.ConstantUtil;
+import com.revers.rec.util.Result;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,8 @@ public class BucketImpl implements Bucket{
                 log.info("bucket " + this.getBucketId() + " 插入第 " +  this.getDepth() + " 个节点" + n.getNodeId() + " 地址" + n.getInetAddress() + ":" + n.getPort());
 
             }else {
-                ResultUtil ping = ClientOperation.ping(bucket.getFirst().getInetAddress(), bucket.getFirst().getPort());
-                if(ping.getFlag()){
+                Result ping = ClientOperation.ping(bucket.getFirst().getInetAddress(), bucket.getFirst().getPort());
+                if(ping.getFlag() == ConstantUtil.SUCCESS){
                     Node first = bucket.getFirst();
                     bucket.removeFirst();
                     bucket.add(first);

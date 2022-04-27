@@ -1495,8 +1495,8 @@ layui.define(['layer', 'laytpl', 'upload'], function(exports){
     
     //关于
     ,about: function(){
-      layer.alert('版本： '+ v + '<br>版权所有：<a href="http://layim.layui.com" target="_blank">Revers</a>', {
-        title: '关于 LayIM'
+      layer.alert('版本： '+ '0.0.1' + '<br>版权所有：<a href="localhost:9000/" target="_blank">Revers</a>', {
+        title: '关于 RecIM'
         ,shade: false
       });
     }

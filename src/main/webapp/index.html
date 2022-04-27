@@ -75,15 +75,15 @@ layui.use('layim', function(layim){
     ,title: 'WebIM' //自定义主面板最小化时的标题
     //,right: '100px' //主面板相对浏览器右侧距离
     //,minRight: '90px' //聊天面板最小化时相对浏览器右侧距离
-    ,initSkin: '5.jpg' //1-5 设置初始背景
+    ,initSkin: '2.jpg' //1-5 设置初始背景
     //,skin: ['aaa.jpg'] //新增皮肤
     ,isfriend: true //是否开启好友
     ,isgroup: false //是否开启群组
-    ,min: true //是否始终最小化主面板，默认false
+    ,min: false //是否始终最小化主面板，默认false
     ,notice: true //是否开启桌面消息提醒，默认false
     ,voice: true //声音提醒，默认开启，声音文件为：default.mp3
     
-    ,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+   // ,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
     ,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
     ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
     
@@ -106,12 +106,12 @@ layui.use('layim', function(layim){
 
   //监听在线状态的切换事件
   layim.on('online', function(data){
-    //console.log(data);
+    console.log(data);
   });
   
   //监听签名修改
   layim.on('sign', function(value){
-    //console.log(value);
+    console.log(value);
   });
 
   //监听自定义工具栏点击，以添加代码为例
@@ -227,8 +227,7 @@ layui.use('layim', function(layim){
       });
     }
   });
-  
-  
+
 
 });
 </script>

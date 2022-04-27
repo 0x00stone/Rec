@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 @ToString
 @Component
 public class Group {
-    private String groupId;
-    private String groupName;
+    private String groupId = "";
+    private String groupName = "";
 }

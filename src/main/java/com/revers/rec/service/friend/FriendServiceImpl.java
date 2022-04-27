@@ -24,8 +24,19 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public void deleteFriendByName(String friendName) {
-        friendMapper.deleteFriendByName(friendName);
+    public void addFriend(String friendName,String friendPublicKey,String groupId) {
+        Friend friend = new Friend();
+        friend.setMyId(AccountConfig.getId());
+        friend.setFriendPublicKey(friendPublicKey);
+        friend.setFriendName(friendName);
+        friend.setCreateTime(System.currentTimeMillis());
+        friend.setGroupId(groupId);
+        friendMapper.insertFriend(friend);
+    }
+
+    @Override
+    public void deleteFriendById(String friendId) {
+        friendMapper.deleteFriendByFriendId(AccountConfig.getId(),friendId);
     }
 
     @Override
@@ -49,6 +60,11 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public Friend findFriendByFriendPublicKey(String friendPublicKey){
         return friendMapper.findFriendByPublicKey(friendPublicKey);
+    }
+
+    @Override
+    public Boolean changeGroup(String friendId, String groupId) {
+        return friendMapper.changeGroup(friendId,groupId);
     }
 
 }

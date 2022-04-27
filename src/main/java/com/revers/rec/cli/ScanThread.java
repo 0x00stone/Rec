@@ -1,26 +1,10 @@
 package com.revers.rec.cli;
 
-import com.revers.rec.Kademlia.Bucket.Bucket;
-import com.revers.rec.Kademlia.Bucket.RoutingTable;
-import com.revers.rec.Kademlia.Node.Node;
-import com.revers.rec.config.AccountConfig;
-import com.revers.rec.domain.Data;
-import com.revers.rec.domain.Friend;
-import com.revers.rec.domain.Message;
-import com.revers.rec.net.Client.ClientOperation;
-import com.revers.rec.service.friend.FriendService;
 import com.revers.rec.service.message.MessageService;
 import com.revers.rec.util.BeanContextUtil;
-import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.ResultUtil;
-import com.revers.rec.util.cypher.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 /**

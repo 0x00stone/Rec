@@ -7,7 +7,7 @@ import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.net.Client.SignatureMatchHandler;
 import com.revers.rec.net.TimeStampHandler;
 import com.revers.rec.util.ConstantUtil;
-import com.revers.rec.util.ResultUtil;
+import com.revers.rec.util.Result;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -22,9 +22,7 @@ import io.netty.util.AttributeKey;
 import io.netty.util.internal.SocketUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.SocketException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Time;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -33,7 +31,7 @@ import java.util.concurrent.Callable;
  * @date 2022/04/19 22:59
  **/
 @Slf4j
-public class HandShakeClient implements Callable<ResultUtil> {
+public class HandShakeClient implements Callable<Result> {
     private MsgProtobuf.Connection connection;
     private String HOST;
     private Integer PORT;
@@ -58,7 +56,7 @@ public class HandShakeClient implements Callable<ResultUtil> {
     }
 
     @Override
-    public ResultUtil call(){
+    public Result call(){
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap()
@@ -87,12 +85,12 @@ public class HandShakeClient implements Callable<ResultUtil> {
             log.info(datagramPacket.toString());
 
             if(!ch.closeFuture().await(optionConfig.getClientHandShakeClientRunTimeOut())){
-                return new ResultUtil(false,"Time Out");
+                return new Result(ConstantUtil.ERROR,"Time Out");
             }
             while (ch.attr(AttributeKey.valueOf("isSuccess")).get() == null){}
 
             if((boolean)ch.attr(AttributeKey.valueOf("isSuccess")).get() == true){
-                return new ResultUtil(true,"连接成功");
+                return new Result(ConstantUtil.SUCCESS,"连接成功");
             }
         } catch (InterruptedException e) {
             System.out.println("对方拒绝连接");
@@ -100,6 +98,6 @@ public class HandShakeClient implements Callable<ResultUtil> {
         } finally {
             group.shutdownGracefully();
         }
-        return new ResultUtil(false, "连接失败");
+        return new Result(ConstantUtil.ERROR, "连接失败");
     }
 }
