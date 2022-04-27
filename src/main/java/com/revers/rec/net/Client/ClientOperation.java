@@ -57,6 +57,30 @@ public class ClientOperation {
         return new Result(ConstantUtil.ERROR,null,communicate);
     }
 
+    public static Result communicate(String destPublicKey, String content,String type) throws ExecutionException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        Data data = new Data();
+        data.setSrcPublicKey(RsaUtil.publicEncrypt(AccountConfig.getPublicKey(),destPublicKey));
+        data.setDestPublicKey(destPublicKey);
+        data.setData(RsaUtil.publicEncrypt(content,destPublicKey));
+        data.setSignature(RsaUtil.privateEncrypt(Sha256Util.getSHA256(data.getData()),AccountConfig.getPrivateKey()));
+        data.setTimeStamp(String.valueOf(System.currentTimeMillis()));
+
+        Data communicate = communicate(data);
+        //TODO: check signature
+
+        if(communicate != null){
+            if(AccountConfig.getPublicKey().equals(communicate.getDestPublicKey()) ){
+                String dataCommunicate = RsaUtil.privateDecrypt(communicate.getData(),AccountConfig.getPrivateKey());
+                if(ConstantUtil.COMMUNICATE_SUCCESS.equals(dataCommunicate)){
+                    communicate.setData(dataCommunicate);
+                    return new Result(ConstantUtil.SUCCESS,null,communicate);
+                }
+            }
+        }
+        log.info("对方未成功接收");
+        return new Result(ConstantUtil.ERROR,null,communicate);
+    }
+
     public static Data communicate(Data data) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, ExecutionException, InterruptedException {
         FutureTask<Data> futureTask = new FutureTask<Data>(new ClientCommunicate(data));
         futureTask.run();

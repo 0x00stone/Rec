@@ -21,4 +21,6 @@ public interface FriendService {
     Friend findFriendByFriendPublicKey(String friendPublicKey);
 
     Boolean changeGroup(String friendId, String groupId);
+
+    Friend findFriendByFriendId(String friendId);
 }

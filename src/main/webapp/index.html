@@ -1,235 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="no-js"><!--<![endif]-->
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Rec</title>
-
-<link rel="stylesheet" href="/static/css/layui.css">
-<style>
-html{background-color: #333;}
-</style>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>rec IM 登陆</title>
+    <link rel="shortcut icon" href="https://tympanus.net/Tutorials/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="static/css/login/style3.css">
+    <link rel="stylesheet" type="text/css" href="static/css/login/animate-custom.css">
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <script src="/static/layui/layui.js"></script>
 </head>
 <body>
+<div class="container">
+    <header>
+        <h1>Rec IM 即时通讯系统</span></h1>
+    </header>
+    <div>
+        <a onclick="login()" id = 'a1'>一键登录A1</a>
+    </div>
+    <section>
+        <div id="container_demo">
+            <a class="hiddenanchor" id="toregister"></a>
+            <a class="hiddenanchor" id="tologin"></a>
+            <div id="wrapper">
+                <div id="login" class="animate form">
+                    <form action="" autocomplete="on" method="post" class="layui-form" lay-filter="login">
+                        <h1>登陆</h1>
+                        <p>
+                            <label for="username" class="uname" data-icon="u"> 用户名称 </label>
+                            <input id="username"  name="username" required="required" type="text" placeholder="eg. administrator">
+                        </p>
+                        <p>
+                            <label for="password" class="youpasswd" data-icon="p"> 密码 </label>
+                            <input id="password" name="password" required="required" type="password" placeholder="eg. X8df!90EO">
+                        </p>
+                        <p class="keeplogin">
+                            <input type="checkbox" name="loginkeeping" id="loginkeeping" value="loginkeeping">
+                            <label for="loginkeeping">记住我</label>
+                        </p>
+                        <p class="login button">
+                            <input type="submit" value="登陆" id="submitLogin">
+                        </p>
+                        <p class="change_link">
+                            还没有账号 ?
+                            <a href="/#toregister" class="to_register">加入我们</a>
+                        </p>
+                    </form>
+                </div>
 
+                <div id="register" class="animate form">
+                    <form action="#" autocomplete="on" class="layui-form" lay-filter="register">
+                        <h1> 注册 </h1>
+                        <p>
+                            <label for="usernamesignup" class="uname" data-icon="u">用户名</label>
+                            <input id="usernamesignup" name="usernamesignup" required="required" type="text" placeholder="mysuperusername690">
+                        </p>
+                        <p>
+                            <label for="passwordsignup" class="youpasswd" data-icon="p">密码 </label>
+                            <input id="passwordsignup" name="passwordsignup" required="required" type="password" placeholder="eg. X8df!90EO">
+                        </p>
+                        <p>
+                            <label for="passwordsignup_confirm" class="youpasswd" data-icon="p">确认密码 </label>
+                            <input id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" placeholder="eg. X8df!90EO">
+                        </p>
+                        <p class="signin button">
+                            <input type="submit" value="注册">
+                        </p>
+                        <p class="change_link">
+                            已经有账号 ?
+                            <a href="/#tologin" class="to_register"> 返回登陆 </a>
+                        </p>
+                    </form>
+                </div>
 
-<script src="/static/layui.js"></script>
-<script>
+            </div>
+        </div>
+    </section>
+</div>
+<script type="text/javascript">
 
+    layui.use(['layer', 'form', 'jquery'], function(){
+        //layui组件
+        var layer = layui.layer, form = layui.form(), $ = layui.jquery;
 
+        $("#a1").click(function(){
+            $("#username").val('a1');
+            $("#password").val('123456');
+            $("#submitLogin").click();
+        });
 
-layui.use('layim', function(layim){
-  
-  //演示自动回复
-  var autoReplay = [
-    '您好，我现在有事不在，一会再和您联系。', 
-    '你没发错吧？face[微笑] ',
-    '洗澡中，请勿打扰，偷窥请购票，个体四十，团体八折，订票电话：一般人我不告诉他！face[哈哈] ',
-    '你好，我是主人的美女秘书，有什么事就跟我说吧，等他回来我会转告他的。face[心] face[心] face[心] ',
-    'face[威武] face[威武] face[威武] face[威武] ',
-    '<（@￣︶￣@）>',
-    '你要和我说话？你真的要和我说话？你确定自己想说吗？你一定非说不可吗？那你说吧，这是自动回复。',
-    'face[黑线]  你慢慢说，别急……',
-    '(*^__^*) face[嘻嘻] ，是贤心吗？'
-  ];
-  
-  //基础配置
-  layim.config({
+        //注册
+        form.on('submit(register)', function (data){
+            var passwordsignup_confirm = $("#passwordsignup_confirm").val().trim();
+            var passwordsignup = $("#passwordsignup").val().trim();
+            if (passwordsignup != passwordsignup_confirm) {
+                layer.msg("两次密码不一致!");
+                $("#passwordsignup_confirm").val("");
+                $("#passwordsignup").val("");
+                return false;
+            }
+            var register = {
+                'username':$("#usernamesignup").val(),
+                'password':passwordsignup
+            };
 
-    //初始化接口,完成
-    init: {
-      url: '/getList'
-      ,data: {}
-    }
-
-    // //查看群员接口
-    // ,members: {
-    //   url: 'json/getMembers.json'
-    //   ,data: {}
-    // }
-    //
-    //上传图片接口
-    ,uploadImage: {
-      url: '/upload/image' //（返回的数据格式见下文）
-      ,type: '' //默认post
-    } 
-    
-    //上传文件接口
-    ,uploadFile: {
-      url: '/upload/file' //（返回的数据格式见下文）
-      ,type: '' //默认post
-    }
-    
-    ,isAudio: false //开启聊天工具栏音频
-    ,isVideo: false //开启聊天工具栏视频
-    
-    //扩展工具栏
-    ,tool: [{
-      alias: 'code'
-      ,title: '代码'
-      ,icon: '&#xe64e;'
-    }]
-    
-    //,brief: true //是否简约模式（若开启则不显示主面板）
-    
-    ,title: 'WebIM' //自定义主面板最小化时的标题
-    //,right: '100px' //主面板相对浏览器右侧距离
-    //,minRight: '90px' //聊天面板最小化时相对浏览器右侧距离
-    ,initSkin: '2.jpg' //1-5 设置初始背景
-    //,skin: ['aaa.jpg'] //新增皮肤
-    ,isfriend: true //是否开启好友
-    ,isgroup: false //是否开启群组
-    ,min: false //是否始终最小化主面板，默认false
-    ,notice: true //是否开启桌面消息提醒，默认false
-    ,voice: true //声音提醒，默认开启，声音文件为：default.mp3
-    
-   // ,msgbox: layui.cache.dir + 'css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
-    ,find: layui.cache.dir + 'css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
-    ,chatLog: layui.cache.dir + 'css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
-    
-  });
-
-  /*
-  layim.chat({
-    name: '在线客服-小苍'
-    ,type: 'kefu'
-    ,avatar: 'http://tva3.sinaimg.cn/crop.0.0.180.180.180/7f5f6861jw1e8qgp5bmzyj2050050aa8.jpg'
-    ,id: -1
-  });
-  layim.chat({
-    name: '在线客服-心心'
-    ,type: 'kefu'
-    ,avatar: 'http://tva1.sinaimg.cn/crop.219.144.555.555.180/0068iARejw8esk724mra6j30rs0rstap.jpg'
-    ,id: -2
-  });
-  layim.setChatMin();*/
-
-  //监听在线状态的切换事件
-  layim.on('online', function(data){
-    console.log(data);
-  });
-  
-  //监听签名修改
-  layim.on('sign', function(value){
-    console.log(value);
-  });
-
-  //监听自定义工具栏点击，以添加代码为例
-  layim.on('tool(code)', function(insert){
-    layer.prompt({
-      title: '插入代码'
-      ,formType: 2
-      ,shade: 0
-    }, function(text, index){
-      layer.close(index2);
-      insert('[pre class=layui-code]' + text + '[/pre]'); //将内容插入到编辑器
+            //loading层
+            var index = layer.load(0, {
+                shade: [0.6,'#fff'] //0.1透明度的白色背景
+            });
+            $.ajax({
+                url:"user/register",
+                dataType:"JSON",
+                contentType:"application/json",
+                type:"POST",
+                data:JSON.stringify(register),
+                success:function(data) {
+                    layer.close(index);
+                    layer.msg(data.msg);
+                    window.location.href = "/#tologin";
+                },
+                error:function(data) {
+                    layer.msg("服务器错误,请稍后再试！");
+                }
+            });
+            return false;
+        });
+        //登陆
+        form.on('submit(login)', function (data){
+            var d = {'username': $("#username").val(),'password': $("#password").val()};
+            //loading层
+            var index = layer.load(1, {
+                shade: [0.6,'#fff'] //0.1透明度的白色背景
+            });
+            $.ajax({
+                url:"user/login",
+                dataType:"JSON",
+                contentType:"application/json",
+                type:"POST",
+                data:JSON.stringify(d),
+                success:function(data) {
+                    layer.close(index);
+                    if (data.flag == 1) {
+                        layer.msg(data.msg);
+                        $("#password").val("");
+                    } else if(data.flag == 0) {
+                        var host = window.location.host;
+                        window.location.href = "http://"+ host +"/user/index";
+                    }
+                },
+                error:function(data) {
+                    layer.msg("服务器错误,请稍后再试！");
+                }
+            });
+            return false;
+        });
     });
-  });
-  
-  //监听layim建立就绪
-  layim.on('ready', function(res){
-
-    //console.log(res.mine);
-    
-    layim.msgbox(5); //模拟消息盒子有新消息，实际使用时，一般是动态获得
-  
-    //添加好友（如果检测到该socket）
-    layim.addList({
-      type: 'group'
-      ,avatar: "http://tva3.sinaimg.cn/crop.64.106.361.361.50/7181dbb3jw8evfbtem8edj20ci0dpq3a.jpg"
-      ,groupname: 'Angular开发'
-      ,id: "12333333"
-      ,members: 0
-    });
-    layim.addList({
-      type: 'friend'
-      ,avatar: "http://tp2.sinaimg.cn/2386568184/180/40050524279/0"
-      ,username: '冲田杏梨'
-      ,groupid: 2
-      ,id: "1233333312121212"
-      ,remark: "本人冲田杏梨将结束AV女优的工作"
-    });
-    
-    setTimeout(function(){
-      //接受消息（如果检测到该socket）
-      layim.getMessage({
-        username: "Hi"
-        ,avatar: "http://qzapp.qlogo.cn/qzapp/100280987/56ADC83E78CEC046F8DF2C5D0DD63CDE/100"
-        ,id: "10000111"
-        ,type: "friend"
-        ,content: "临时："+ new Date().getTime()
-      });
-      
-      /*layim.getMessage({
-        username: "贤心"
-        ,avatar: "http://tp1.sinaimg.cn/1571889140/180/40030060651/1"
-        ,id: "100001"
-        ,type: "friend"
-        ,content: "嗨，你好！欢迎体验LayIM。演示标记："+ new Date().getTime()
-      });*/
-      
-    }, 3000);
-  });
-
-  //监听发送消息
-  layim.on('sendMessage', function(data){
-    var To = data.to;
-    //console.log(data);
-    
-    if(To.type === 'friend'){
-      layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
-    }
-    
-    //演示自动回复
-    setTimeout(function(){
-      var obj = {};
-      if(To.type === 'group'){
-        obj = {
-          username: '模拟群员'+(Math.random()*100|0)
-          ,avatar: layui.cache.dir + 'images/face/'+ (Math.random()*72|0) + '.gif'
-          ,id: To.id
-          ,type: To.type
-          ,content: autoReplay[Math.random()*9|0]
-        }
-      } else {
-        obj = {
-          username: To.name
-          ,avatar: To.avatar
-          ,id: To.id
-          ,type: To.type
-          ,content: autoReplay[Math.random()*9|0]
-        }
-        layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
-      }
-      layim.getMessage(obj);
-    }, 1000);
-  });
-
-  //监听查看群员
-  layim.on('members', function(data){
-    //console.log(data);
-  });
-  
-  //监听聊天窗口的切换
-  layim.on('chatChange', function(res){
-    var type = res.data.type;
-    console.log(res.data.id)
-    if(type === 'friend'){
-      //模拟标注好友状态
-      //layim.setChatStatus('<span style="color:#FF5722;">在线</span>');
-    } else if(type === 'group'){
-      //模拟系统消息
-      layim.getMessage({
-        system: true
-        ,id: res.data.id
-        ,type: "group"
-        ,content: '模拟群员'+(Math.random()*100|0) + '加入群聊'
-      });
-    }
-  });
-
-
-});
 </script>
 </body>
 </html>

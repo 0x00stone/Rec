@@ -29,7 +29,9 @@ public class ConstantUtil {
     public static final String LOGGIN_FAIL = "登陆失败";
     public static final String NONACTIVED = "用户未激活";
     public static final String REGISTER_SUCCESS = "注册成功";
-    public static final String REGISTER_FAIL = "登陆失败";
+    public static final String REGISTER_FAIL = "注册失败";
+    public static final String LOGIN_SUCCESS = "登录成功";
+    public static final String LOGIN_FAIL = "登录失败";
     public static final String SUCCESS_MESSAGE = "操作成功";
     public static final String ERROR_MESSAGE = "操作失败";
     public static final String UPLOAD_SUCCESS = "上传成功";

@@ -67,4 +67,8 @@ public class FriendServiceImpl implements FriendService {
         return friendMapper.changeGroup(friendId,groupId);
     }
 
+    @Override
+    public Friend findFriendByFriendId(String friendId){
+        return friendMapper.findFriendByFriendId(AccountConfig.getId(),friendId);
+    }
 }

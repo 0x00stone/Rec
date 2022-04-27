@@ -38,7 +38,6 @@ public class UserServiceImpl implements UserService {
     // 从 数据库中查找 username 用户并放入accountConfig账户配置中
     @Override
     public Result login(String username, String password) {
-        log.info("Service: " + username + "登录");
         Result result = new Result();
 
         User user = userMapper.findUserByUsername(username);
@@ -66,7 +65,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result register(String username, String password) throws NoSuchAlgorithmException {
-        log.info("Service: " + username + "注册");
         Result result = new Result();
         if (userMapper.findUserByUsername(username) != null ){
             result.setFlag(ConstantUtil.ERROR);
