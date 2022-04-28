@@ -12,10 +12,13 @@ import java.util.List;
 public interface MessageMapper {
 
     //TODO 设置主键为UUID
-    @Insert("insert into '${tableName}'(type,createTime,updateTime,isSender,isRead,strTalker,strContent)" +
-            "values(#{message.type},#{message.createTime},#{message.updateTime},#{message.isSender},#{message.isRead},#{message.strTalker},#{message.strContent});")
+    @Insert("insert into '${tableName}'(type,createTime,updateTime,isSender,isRead,strTalker,strTalkerId,strContent)" +
+            "values(#{message.type},#{message.createTime},#{message.updateTime},#{message.isSender},#{message.isRead},#{message.strTalker},#{message.strTalkerId},#{message.strContent});")
     @SelectKey(statement = "SELECT seq messageId FROM sqlite_sequence WHERE (name = 'message')", before = false, keyProperty = "messageId", resultType = Integer.class)
-    public boolean createMessage(Message message,String tableName);
+    public Integer createMessage(Message message,String tableName);
+
+    @Select("select last_insert_rowid();")
+    public Integer getLastInsertId();
 
     @Update("update '${tableName}' set isRead = 1 ,updateTime = #{updateTime} where messageId = #{messageId};")
     public void readMessage(int messageId,Long updateTime,String tableName);
@@ -32,11 +35,22 @@ public interface MessageMapper {
     @Select("select * from '${tableName}' where strTalker = #{strTalker} ORDER BY messageId desc;")
     public List<Message> findByTalker(String strTalker,String tableName);
 
+    @Select("select * from '${tableName}' where strTalkerId = #{strTalkerId} ORDER BY messageId desc;")
+    public List<Message> findByTalkerId(String strTalkerId,String tableName);
+
     @Select("select * from '${tableName}' where messageId = #{messageId};")
     public Message findById(Integer messageId,String tableName);
 
     @Select("select * from '${tableName}' where isRead = 0 ORDER BY messageId desc;")
     public List<Message> findUnreadByTalker(String tableName);
+
+
+    @Select("select * from '${tableName}' where strTalker = #{strTalker} ORDER BY messageId desc LIMIT ((#{pages}-1)*#{pageSize}),#{pageSize};")
+    public List<Message> findByTalkerLimit(String strTalker,String tableName,int pages,int pageSize);
+
+
+    @Select("SELECT COUNT(*) FROM '${tableName}' WHERE strTalker = #{strTalker};")
+    public Integer countMessage(String tableName,String strTalker);
 
 
 

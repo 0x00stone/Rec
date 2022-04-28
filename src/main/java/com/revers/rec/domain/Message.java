@@ -20,6 +20,7 @@ public class Message implements Serializable {
     private Integer isSender;
     private Integer isRead;
     private String strTalker;
+    private String strTalkerId;
     private String strContent;
     private Long createTime;
     private Long updateTime;

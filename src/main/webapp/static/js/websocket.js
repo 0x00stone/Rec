@@ -51,11 +51,16 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 		},
 		//处理接收到的消息
 		handleMessage : function(data) {
+			console.log("处理接收到的消息->data"+data);
 			json = eval("(" + data + ")");
 			var type = json.type;
 			switch(type) {
 				//处理好友和群消息
-				case "friend":
+				case "friend":{
+					console.log(data);
+					layim.getMessage(JSON.parse(data));
+					break;
+				};
 				case "group": { 
 					layim.getMessage(JSON.parse(data));
 					break;
@@ -72,11 +77,11 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 					break;
 				};
 				//消息盒子
-				case "unHandMessage": {
-					//消息盒子未处理的消息
-					layim.msgbox(json.count);
-					break;
-				};
+				// case "unHandMessage": {
+				// 	//消息盒子未处理的消息
+				// 	layim.msgbox(json.count);
+				// 	break;
+				// };
 				//删除好友消息，
 				case "delFriend": {
 					var friends = layim.cache().friend;        	
@@ -108,12 +113,12 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 					layer.alert("用户'"+json.mine.username+"'已同意添加你为好友!", {icon: 0,time:0,title:"添加信息"});
 					break;
 				};
-				//请求加群
-				case "addGroup": {
-					layer.alert("有新的用户申请加群,请查看消息盒子!", {icon: 0,time:0,title:"添加信息"});
-					layim.msgbox(1);
-					break;
-				}
+				// //请求加群
+				// case "addGroup": {
+				// 	layer.alert("有新的用户申请加群,请查看消息盒子!", {icon: 0,time:0,title:"添加信息"});
+				// 	layim.msgbox(1);
+				// 	break;
+				// }
 			}
 		}
 	}
@@ -156,18 +161,18 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 	      	,icon: '&#xe64e;'
 	    }]
 	    
-	    ,title: '我的LayIM' //自定义主面板最小化时的标题
+	    ,title: '我的Rec IM' //自定义主面板最小化时的标题
 	    ,brief: false //是否简约模式（若开启则不显示主面板）
 	    ,right: '20px' //主面板相对浏览器右侧距离
 	    ,minRight: '20px' //聊天面板最小化时相对浏览器右侧距离
-	    ,initSkin: '5.jpg' //1-5 设置初始背景
+	    ,initSkin: '3.jpg' //1-5 设置初始背景
 	    //,skin: ['aaa.jpg'] //新增皮肤
 	    ,isfriend: true //是否开启好友
-	    ,isgroup: true //是否开启群组
+	    ,isgroup: false //是否开启群组
 	    ,min: false //是否始终最小化主面板，默认false
 	    ,notice: true //是否开启桌面消息提醒，默认false
 	    ,voice: true //声音提醒，默认开启，声音文件为：default.wav
-	    ,msgbox: '/static/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+	    //,msgbox: '/static/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
 	    ,find: '#' //发现页面地址，若不开启，剔除该项即可
 	    ,chatLog: '/user/chatLogIndex' //聊天记录页面地址，若不开启，剔除该项即可
 	  });
@@ -235,12 +240,12 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 				  }, interval);
 			  }
 		  };
-		  //请求未处理的消息
-		  socket.send(JSON.stringify({
-		    	 type:"unHandMessage",
-		    	 mine:null,
-		    	 to:null
-		  }));
+		  //请求未处理的消息 , 消息盒子
+		  // socket.send(JSON.stringify({
+		  //   	 type:"unHandMessage",
+		  //   	 mine:null,
+		  //   	 to:null
+		  // }));
 	  });
 	  
 	  //监听发送消息
@@ -253,7 +258,7 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 	    	 to:To
 	      }));
 	      if(To.type === 'friend'){
-		      layim.setChatStatus('<span style="color:#FF5722;">对方正在输入。。。</span>');
+		      layim.setChatStatus('<span style="color:#FF5722;">。。。</span>');
 	      }
 	  });
 	
@@ -266,21 +271,21 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 	  layim.on('chatChange', function(res){
 	      var type = res.data.type;
 	      //如果打开的是好友窗口则监测好友的状态
-	      if("friend" == type){	    	  
-	    	  socket.send(JSON.stringify({
-	    		  type:"checkOnline",
-	    		  mine:null,
-	    		  to:res.data
-	    	  }));
-	      } else if(type === 'group'){
-		      //模拟系统消息
-		      /*layim.getMessage({
-		          system: true
-	        	  ,id: res.data.id
-	        	  ,type: "group"
-	        	  ,content: '模拟群员'+(Math.random()*100|0) + '加入群聊'
-	      	  });*/
-	    }
+	    //   if("friend" == type){
+	    // 	  socket.send(JSON.stringify({
+	    // 		  type:"checkOnline",
+	    // 		  mine:null,
+	    // 		  to:res.data
+	    // 	  }));
+	    //   } else if(type === 'group'){
+		//       //模拟系统消息
+		//       /*layim.getMessage({
+		//           system: true
+	    //     	  ,id: res.data.id
+	    //     	  ,type: "group"
+	    //     	  ,content: '模拟群员'+(Math.random()*100|0) + '加入群聊'
+	    //   	  });*/
+	    // }
 	});
 	  
     //外部自定义我的事件
@@ -437,7 +442,7 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
                 ,skin: 'layui-box'
                 ,anim: 2
                 ,id: 'layui-layim-chatlog'
-                ,content: layim.cache().base.chatLog + '?id=' + friend.id + '&Type=friend'
+                ,content: layim.cache().base.chatLog + '?id=' + friend.id
             });
         }
     }

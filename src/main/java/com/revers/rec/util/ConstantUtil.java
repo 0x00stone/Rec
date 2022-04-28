@@ -41,6 +41,7 @@ public class ConstantUtil {
     public static final String AVATAR_PATH = "/static/image/avatar/";
     public static final String GROUP_AVATAR_PATH = "/static/image/group/";
     public static final String DEFAULT_GROUP_NAME = "我的好友";
+    public static final Integer SYSTEM_PAGE = 20;
 
 
 

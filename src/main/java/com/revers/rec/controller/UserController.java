@@ -2,16 +2,20 @@ package com.revers.rec.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.domain.ChatHistory;
 import com.revers.rec.domain.Friend;
 import com.revers.rec.domain.Group;
 import com.revers.rec.domain.Indexer;
+import com.revers.rec.domain.front.FrontMessage;
 import com.revers.rec.domain.json.JsonGroup;
 import com.revers.rec.domain.json.JsonUser;
 import com.revers.rec.service.friend.FriendService;
 import com.revers.rec.service.group.GroupService;
+import com.revers.rec.service.message.MessageService;
 import com.revers.rec.service.user.UserService;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.Result;
+import com.revers.rec.websocket.WebSocketMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,9 +23,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -35,6 +41,8 @@ public class UserController {
     private GroupService groupService;
     @Autowired
     private FriendService friendService;
+    @Autowired
+    private MessageService messageService;
 
     //    /**
     //     * @description 退出群
@@ -166,39 +174,34 @@ public class UserController {
     //        gson.toJson(result)
     //    }
     //
-    //    /**
-    //     * @description 获取聊天记录
-    //     * @param id 与谁的聊天记录id
-    //     * @param Type 类型，可能是friend或者是group
-    //     */
-    //    @ResponseBody
-    //    @RequestMapping(value = Array("/chatLog"), method = Array(RequestMethod.POST))
-    //    def chatLog(@RequestParam("id") id: Integer, @RequestParam("Type") Type: String,
-    //        @RequestParam("page") page: Int, request: HttpServletRequest, model: Model): String = {
-    //        val user = request.getSession.getAttribute("user").asInstanceOf[User]
-    //        PageHelper.startPage(page, SystemConstant.SYSTEM_PAGE)
-    //        //查找聊天记录
-    //        val historys:List[ChatHistory] = userService.findHistoryMessage(user, id, Type)
-    //        gson.toJson(new ResultSet(historys))
-    //    }
-    //
-    //    /**
-    //     * @description 弹出聊天记录页面
-    //     * @param id 与谁的聊天记录id
-    //     * @param Type 类型，可能是friend或者是group
-    //     */
-    //    @RequestMapping(value = Array("/chatLogIndex"), method = Array(RequestMethod.GET))
-    //    def chatLogIndex(@RequestParam("id") id: Integer, @RequestParam("Type") Type: String,
-    //        model: Model, request: HttpServletRequest): String = {
-    //        model.addAttribute("id", id)
-    //        model.addAttribute("Type", Type)
-    //        val user = request.getSession.getAttribute("user").asInstanceOf[User]
-    //        var pages: Int = userService.countHistoryMessage(user.getId, id, Type)
-    //        pages = if (pages < SystemConstant.SYSTEM_PAGE) pages else (pages / SystemConstant.SYSTEM_PAGE + 1)
-    //        model.addAttribute("pages", pages)
-    //        "chatLog"
-    //    }
-    //
+    /**
+     * @description 获取聊天记录
+     * @param id 与谁的聊天记录id
+     */
+    @ResponseBody
+    @RequestMapping(value = "/chatLog", method = RequestMethod.POST)
+    public String chatLog(@RequestParam("id") String id,@RequestParam("page") Integer page) {
+        log.info("获取聊天记录，id=" + id + ",page=" + page);
+
+        List<ChatHistory> list = messageService.chatLog(id,page);
+
+        return JSON.toJSONString(new Result(list));
+    }
+    /**
+     * @description 弹出聊天记录页面
+     * @param id 与谁的聊天记录id
+     */
+    @RequestMapping(value = "/chatLogIndex", method = RequestMethod.GET)
+    public String chatLogIndex(@RequestParam("id") String id, Model model, HttpServletRequest request) {
+        model.addAttribute("id", id);
+        model.addAttribute("Type", "friend");
+        Integer pages = messageService.countMessage(id);
+        System.out.println("pages" + pages);
+        pages =  (pages < ConstantUtil.SYSTEM_PAGE) ? 1 :(pages / ConstantUtil.SYSTEM_PAGE + 1);
+        model.addAttribute("pages", pages);
+        return "chatLog";
+    }
+
     //    /**
     //     * @description 获取离线消息
     //     */
@@ -273,8 +276,6 @@ public class UserController {
     public String login(@RequestBody Indexer indexer){
         String username = indexer.getUsername();
         String password = indexer.getPassword();
-
-        log.info("用户: " + username + "登录" + password);
 
         Map data = new HashMap();
         if(isEmpty(username,password)){

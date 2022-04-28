@@ -42,12 +42,13 @@ layui.use(['layim', 'laypage'], function(){
 	  	jump: function(obj, first){
   	    	//得到了当前页，用于向服务端请求对应数据
   	    	var curr = obj.curr;
+			console.log(curr);
 	  	    //ajax 加载聊天记录
 	  	    $.ajax({
 	  	   		url:"${pageContext.request.contextPath}/user/chatLog",
 	  	   		dataType:"JSON",
 	  	   		type:"POST",
-	  	   		data:{"id":${id},"Type":'${Type}',"page":curr},
+	  	   		data:{"id":"${id}","page":curr},
 	  	   		success:function(data) {
 	  	   			if (data.data.length != 0) {	  	   				
 		  	  		  	var html = laytpl(LAY_tpl.value).render({

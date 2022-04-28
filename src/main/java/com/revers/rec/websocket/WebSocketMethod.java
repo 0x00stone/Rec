@@ -1,4 +1,4 @@
-package com.revers.rec.websocket.domain;
+package com.revers.rec.websocket;
 
 import com.revers.rec.Kademlia.Bucket.Bucket;
 import com.revers.rec.Kademlia.Bucket.RoutingTable;
@@ -8,6 +8,7 @@ import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.Friend;
 import com.revers.rec.domain.Message;
+import com.revers.rec.domain.front.FrontMessage;
 import com.revers.rec.net.Client.ClientOperation;
 import com.revers.rec.service.friend.FriendService;
 import com.revers.rec.service.message.MessageService;
@@ -17,13 +18,20 @@ import com.revers.rec.util.Result;
 import com.revers.rec.util.cypher.AesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import javax.websocket.Session;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
 @Slf4j
+@Service
 public class WebSocketMethod {
 
     @Autowired
@@ -35,6 +43,8 @@ public class WebSocketMethod {
     @Autowired
     RoutingTable routingTable;
 
+    static WebSocketSession session;
+
     WebSocketMethod(){
         if(friendService == null){
             friendService = BeanContextUtil.getBean(FriendService.class);
@@ -45,22 +55,6 @@ public class WebSocketMethod {
         if(routingTable == null){
             routingTable = BeanContextUtil.getBean(RoutingTable.class);
         }
-    }
-
-    public void sf(String friendName)  {
-        Friend friend = friendService.findFriendByName(friendName);
-        if(friend != null){
-            String friendPublicKey = friend.getFriendPublicKey();
-            String content = scanContent();
-            sendMessage(friendPublicKey, content);
-        }else{
-            log.info("没有找到好友");
-        }
-    }
-
-    public void sa(String friendPublicKey) {
-        String content = scanContent();
-        sendMessage(friendPublicKey, content);
     }
 
     public void rn(){
@@ -172,7 +166,26 @@ public class WebSocketMethod {
         return scanner.nextLine();
     }
 
-    private void sendMessage(String toPublicKey,String content){
+    /**
+     * @description 发送消息
+     * @message Message
+     */
+    public void sendMessage(FrontMessage message) {
+        Friend toFriend = friendService.findFriendByFriendId(message.getTo().get("id"));
+        String toPublicKey;
+
+        if (toFriend == null) {
+            //陌生人
+            toPublicKey = messageService.findPublicKeyByPublicKeyId(message.getTo().get("id"));
+        } else {
+            toPublicKey = toFriend.getFriendPublicKey();
+        }
+        if(toPublicKey == null){
+            log.info("没有找到对方的公钥");
+            return;
+        }
+
+        String content = message.getMine().get("content");
         new Thread(new Runnable() {
 
             @Override
@@ -180,16 +193,16 @@ public class WebSocketMethod {
                 Result communicate = null;
                 try {
                     communicate = ClientOperation.communicate(toPublicKey, content);
-                    if(communicate != null && communicate.getFlag() == ConstantUtil.SUCCESS){
-                        if(ConstantUtil.COMMUNICATE_SUCCESS.equals(((Data)communicate.getData()).getData())){
+                    if (communicate != null && communicate.getFlag() == ConstantUtil.SUCCESS) {
+                        if (ConstantUtil.COMMUNICATE_SUCCESS.equals(((Data) communicate.getData()).getData())) {
                             //存储消息
-                            messageService.saveMessage(content,toPublicKey,true);
+                            messageService.saveMessage(content, toPublicKey, true);
 
                             log.info("已接收");
-                        }else {
+                        } else {
                             log.info("未接收");
                         }
-                    }else {
+                    } else {
                         log.info("发送失败");
                     }
                 } catch (Exception e) {
@@ -198,8 +211,32 @@ public class WebSocketMethod {
                 }
             }
         }).start();
+
         Menu.printTips();
 
+    }
+
+    /**
+     * @description 统计离线消息数量
+     */
+    public HashMap<String,String> countUnHandMessage(){
+        HashMap<String,String> result = new HashMap<String,String>();
+        result.put("type","unHandMessage");
+        //result.put("count",String.valueOf(messageService.countMessage()));
+        return result;
+    }
+
+    /**
+     * @description 发送消息
+     * @param message
+     */
+    public synchronized static void sendMessage(String message){
+        try {
+            session.sendMessage(new TextMessage(message));
+        }catch (IOException e) {
+            e.printStackTrace();
+            log.info("发送给客户端失败,文本内容:"+ message);
+        }
     }
 
 }

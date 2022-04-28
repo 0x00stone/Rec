@@ -22,8 +22,8 @@ public interface FriendMapper {
     @Select("SELECT * FROM friend WHERE friendPublicKey = #{friendPublicKey}")
     public Friend findFriendByPublicKey(String friendPublicKey);
 
-    @Delete("SELECT * FROM friend WHERE myId = #{myId} and friendId = #{friendId}")
-    public Friend findFriendByFriendId(String myId,String FriendId);
+    @Select("SELECT * FROM friend WHERE myId = #{myId} and friendId = #{friendId}")
+    public Friend findFriendByFriendId(String myId,String friendId);
 
 
     @Select("SELECT * FROM friend WHERE friendName = #{friendName}")

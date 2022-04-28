@@ -15,6 +15,13 @@ public class FrontMessage {
     private HashMap<String,String> to;
     @Override
     public String toString(){
-        return "type = " + type + ", mine = " + mine.toString() + ",to = " + to.toString();
+        String string = "type = " + type;
+        if(mine != null){
+            string += ", mine = " + mine.toString();
+        }
+        if(to != null){
+            string += ", to = " + to.toString();
+        }
+        return string;
     }
 }
