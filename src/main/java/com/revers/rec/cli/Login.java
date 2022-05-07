@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 @Slf4j
 @Controller
-public class Login  {
+public class Login  implements Runnable{
 
     @Autowired
     private UserServiceImpl userService;
@@ -37,8 +37,9 @@ public class Login  {
                 System.out.println("2.注册");
                 Scanner scanner = new Scanner(System.in);
                 if (scanner.hasNext()) {
-                    int choice = Integer.valueOf(scanner.nextLine());
-                    if (choice == 1) {
+                    String choice = scanner.nextLine().trim();
+
+                    if ("1".equals(choice)) {
                         System.out.print("请输入用户名: ");
                         while (!scanner.hasNextLine()) {
                         }
@@ -50,7 +51,7 @@ public class Login  {
 
                         log.info(userService.login(username, password).getMsg());
                     }
-                    if (choice == 2) {
+                    if ("2".equals(choice)) {
                         System.out.print("请输入用户名: ");
                         while (!scanner.hasNextLine()) {
                         }

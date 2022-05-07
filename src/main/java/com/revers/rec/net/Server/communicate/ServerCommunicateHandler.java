@@ -93,7 +93,7 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
                         response.put("type", "friend");//聊天窗口来源类型，从发送消息传递的to里面获取
                         response.put("content", context);//消息内容
                         response.put("cid", String.valueOf(id));//消息id，可不传。除非你要对消息进行一些操作（如撤回）
-                        response.put("mine", String.valueOf(false));//是否我发送的消息，如果为true，则会显示在右方
+                        response.put("mine", "false");//是否我发送的消息，如果为true，则会显示在右方
                         response.put("fromid", DigestUtil.Sha1AndSha256(srcPublicKey));//消息的发送者id（比如群组中的某个消息发送者），可用于自动解决浏览器多窗口时的一些问题
                         response.put("timestamp", String.valueOf(System.currentTimeMillis()));//服务端时间戳毫秒数。注意：如果你返回的是标准的 unix 时间戳，记得要 *1000
                     }else {
@@ -103,7 +103,7 @@ public class ServerCommunicateHandler extends ChannelInboundHandlerAdapter {
                         response.put("type", "friend");//聊天窗口来源类型，从发送消息传递的to里面获取
                         response.put("content", context);//消息内容
                         response.put("cid", String.valueOf(id));//消息id，可不传。除非你要对消息进行一些操作（如撤回）
-                        response.put("mine", String.valueOf(false));//是否我发送的消息，如果为true，则会显示在右方
+                        response.put("mine", "false");//是否我发送的消息，如果为true，则会显示在右方
                         response.put("fromid", srcFriend.getFriendId());//消息的发送者id（比如群组中的某个消息发送者），可用于自动解决浏览器多窗口时的一些问题
                         response.put("timestamp", String.valueOf(System.currentTimeMillis()));//服务端时间戳毫秒数。注意：如果你返回的是标准的 unix 时间戳，记得要 *1000
                         //121220461391900

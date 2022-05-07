@@ -231,11 +231,13 @@ public class WebSocketMethod {
      * @param message
      */
     public synchronized static void sendMessage(String message){
-        try {
-            session.sendMessage(new TextMessage(message));
-        }catch (IOException e) {
-            e.printStackTrace();
-            log.info("发送给客户端失败,文本内容:"+ message);
+        if(session != null) {
+            try {
+                session.sendMessage(new TextMessage(message));
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.info("发送给客户端失败,文本内容:" + message);
+            }
         }
     }
 

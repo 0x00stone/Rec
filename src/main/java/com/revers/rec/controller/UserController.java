@@ -1,6 +1,7 @@
 package com.revers.rec.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.revers.rec.RecApplication;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.ChatHistory;
 import com.revers.rec.domain.Friend;
@@ -273,7 +274,7 @@ public class UserController {
      */
     @ResponseBody
     @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public String login(@RequestBody Indexer indexer){
+    public String login(@RequestBody Indexer indexer) throws InterruptedException {
         String username = indexer.getUsername();
         String password = indexer.getPassword();
 
