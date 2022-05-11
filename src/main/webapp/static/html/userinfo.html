@@ -13,9 +13,10 @@
         <blockquote class="layui-elem-quote">
             	个人信息
         </blockquote>
+
 		<div id="user_info">
 			<div class="layui-form-item">
-				<label for="user_name" class="layui-form-label">用户名</label>
+				<label id="user_name" class="layui-form-label">用户名</label>
 				<div class="layui-input-inline">
 					<input type="text" id="username" name="username" autocomplete="off" class="layui-input" value="">
 				</div>				
@@ -29,26 +30,29 @@
                 </div>
             </div>
             
-			<div class="layui-form-item">
-				<label for="user_email" class="layui-form-label">邮箱</label>
+			<div class="layui-form-item" id="copyId">
+				<label id="user_id" class="layui-form-label">nodeId</label>
 				<div class="layui-input-inline">
-					<input lay-verify="email" type="email" id="email" name="email" class="layui-input" value="">
+					<input id="nodeId" name="id" class="layui-input" value="" disabled="true">
 				</div>
 			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">性别</label>
-				<input type="radio" name="sex" value="nan" title="男">
-				<input type="radio" name="sex" value="nv" title="女" checked>
+
+			<div class="layui-form-item" id="copyPublicKey">
+                <label id="user_publicKey" class="layui-form-label">node公钥</label>
+                <div class="layui-input-inline">
+                    <textarea  id="publicKey" name="publicKey" class="layui-input" value="" disabled="true"></textarea>
+                </div>
 			</div>
+
 			<div class="layui-form-item">
-				<label for="user_email" class="layui-form-label">签名</label>
+				<label id="user_email" class="layui-form-label">签名</label>
 				<div class="layui-input-inline">
 					<input type="text" id="sign" name="sign" autocomplete="off" class="layui-input" style="width: 350px;">
 				</div>
 			</div>
 		</div>
         <blockquote class="layui-elem-quote">
- 		           修改密码
+ 		           修改密码(暂不支持)
         </blockquote>
 		    <div class="layui-form-item">
                 <label for="pwd" class="layui-form-label">旧密码</label>

@@ -1500,7 +1500,7 @@ layui.define(['layer', 'laytpl', 'upload', 'flow'], function(exports){
 		  type: 2,
 		  title: "查找",
 		  skin: 'layui-layer-rim',
-		  area: ['610px', '500px'], 
+		  area: ['800px', '500px'],
 		  content: '/static/html/find.html'
 	  }); 
     }

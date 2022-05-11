@@ -2,6 +2,7 @@ package com.revers.rec.Kademlia.Bucket;
 
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
+import com.revers.rec.domain.vo.NodeVo;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -22,5 +23,8 @@ public interface RoutingTable
      * @return Bucket[] The buckets in this Kad Instance
      */
     public  Bucket[] getBuckets();
+
+    /** 前端获取路由表 **/
+    public List<NodeVo> getAllNodeVo();
 
 }

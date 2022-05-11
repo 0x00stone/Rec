@@ -1,8 +1,7 @@
 /**
 
- @Name：layui.flow 流加载
- @Author：贤心
- @License：LGPL
+ @Name flow 流加载组件
+ @License：MIT
     
  */
  
@@ -10,7 +9,7 @@
 layui.define('jquery', function(exports){
   "use strict";
   
-  var $ = layui.jquery, Flow = function(options){}
+  var $ = layui.$, Flow = function(options){}
   ,ELEM_MORE = 'layui-flow-more'
   ,ELEM_LOAD = '<i class="layui-anim layui-anim-rotate layui-anim-loop layui-icon ">&#xe63e;</i>';
 
@@ -77,7 +76,7 @@ layui.define('jquery', function(exports){
       var othis = $(this), top = othis.scrollTop();
       
       if(timer) clearTimeout(timer);
-      if(isOver) return;
+      if(isOver || !elem.width()) return; //如果已经结束，或者元素处于隐藏状态，则不执行滚动加载
       
       timer = setTimeout(function(){
         //计算滚动所在容器的可视高度
@@ -94,6 +93,7 @@ layui.define('jquery', function(exports){
         }
       }, 100);
     });
+    
     return that;
   };
   
@@ -117,7 +117,7 @@ layui.define('jquery', function(exports){
 
       /* 始终只加载在当前屏范围内的图片 */
       if(elemTop >= start && elemTop <= end){
-        if(!item.attr('src')){
+        if(item.attr('lay-src')){
           var src = item.attr('lay-src');
           layui.img(src, function(){
             var next = that.lazyimg.elem.eq(index);
@@ -126,6 +126,9 @@ layui.define('jquery', function(exports){
             /* 当前图片加载就绪后，检测下一个图片是否在当前屏 */
             next[0] && render(next);
             index++;
+          }, function(){
+            var next = that.lazyimg.elem.eq(index);
+            item.removeAttr('lay-src');
           });
         }
       }

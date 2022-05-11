@@ -3,19 +3,47 @@ layui.use(['jquery', 'layer', 'form', 'upload'], function() {
 	layim = parent.layim,
 	form = layui.form,
 	layer = layui.layer;
+	var upload = layui.upload;
+
 	//屏蔽右键菜单
 	$(document).bind("contextmenu",function(e){
         return false;
     });
+
+
+	//点击复制id
+	$("#copyId").click(function(){
+		const input = document.createElement('input');
+		input.style.cssText = 'opacity:0;;';
+		input.type = 'text';
+		input.value = $("#nodeId").val();
+		document.body.appendChild(input);
+		input.select();
+		document.execCommand('Copy');
+		layer.msg("复制成功");
+	});
+
+	//点击复制公钥
+	$("#copyPublicKey").click(function(){
+		const input = document.createElement('input');
+		input.style.cssText = 'opacity:0;;';
+		input.type = 'text';
+		input.value = $("#publicKey").val();
+		document.body.appendChild(input);
+		input.select();
+		document.execCommand('Copy');
+		layer.msg("复制成功");
+	});
+
     //修改头像
-    layui.upload({
+    upload.render({
         url: "/user/updateAvatar"
         ,title: '修改头像'
         ,ext: 'jpg|png|gif'
         ,before: function(input) {
         	console.log("before upload!");
         }
-        ,success: function(res, input){
+        ,done: function(res, input){
             if(0 == res.code){
                 $("#LAY_demo_upload").attr('src', res.data.src);
                 $("#user_avatar").val(res.data.src);
@@ -29,9 +57,11 @@ layui.use(['jquery', 'layer', 'form', 'upload'], function() {
     //从缓存中初始化数据
 	$(document).ready(function(){
 		var mine = layim.cache().mine;
+		console.log(mine);
 		$("#username").val(mine.username);
-		$("#email").val(mine.email);
+		$("#publicKey").val(mine.publicKey);
 		$("#sign").val(mine.sign);
+		$("#nodeId").val(mine.id);
 		$("#LAY_demo_upload").attr("src", mine.avatar);
 		if (mine.sex == "0") {
 			$("input[type='radio']").eq(0).attr("checked",true);

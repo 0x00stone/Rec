@@ -20,5 +20,8 @@ public interface UserMapper {
     @Insert("insert into user(id,username,publicKey,privateKey,aeskey)values(#{id},#{username},#{publicKey},#{privateKey},#{aeskey});")
     public boolean createUser(User user);
 
+    @Update("UPDATE user SET sign = #{sign} WHERE publicKey = #{publicKey}")
+    public void setSign(String sign,String publicKey);
+
 
 }

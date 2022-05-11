@@ -31,11 +31,6 @@ public class RecApplication implements CommandLineRunner {
         new BeanContextUtil().setApplicationContext(run);;
 
 
-
-        Login login = new Login();
-        login.run();
-
-
         new Thread(new Login()).start();
 //        测试阶段默认登录a1
 //        UserServiceImpl userService;
@@ -43,6 +38,8 @@ public class RecApplication implements CommandLineRunner {
 //        log.info(userService.login("a1", "123456").getMsg());
 
         while (AccountConfig.getPublicKey() == null || "".equals(AccountConfig.getPublicKey())){}
+
+        log.info("用户登录成功,开启监听端口");
 
         new Thread(new Server()).start();
 

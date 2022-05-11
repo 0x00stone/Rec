@@ -57,8 +57,6 @@ public class UserServiceImpl implements UserService {
             result.setFlag(ConstantUtil.SUCCESS);
             result.setMsg("用户: " + username + " 已登录");
             result.setData(user);
-            log.info("用户: " + username + " 已登录");
-            log.info("用户信息 : " + accountConfig);
         }
         return result;
     }
@@ -87,6 +85,11 @@ public class UserServiceImpl implements UserService {
             result.setMsg(username + " 注册成功");
         }
         return result;
+    }
+
+    @Override
+    public void setSign(String sign){
+        userMapper.setSign(sign,AccountConfig.getPublicKey());
     }
 
 

@@ -34,7 +34,7 @@ layui.use(['layim', 'laypage'], function(){
   	,$ = layui.jquery
   	,laypage = layui.laypage;
     
-	laypage({
+	laypage.render({
   		cont:$("#page"),
   		pages:${pages},
   		curr:1,

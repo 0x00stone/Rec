@@ -11,4 +11,6 @@ public interface UserService {
 
     public Result register(String username, String password) throws NoSuchAlgorithmException;
 
+    public void setSign(String sign);
+
 }

@@ -1,8 +1,7 @@
 ﻿/**
  
- @Name : layui.laytpl 模板引擎
- @Author：贤心
- @License：LGPL
+ @Name : laytpl 模板引擎
+ @License：MIT
  
  */
 
@@ -32,7 +31,7 @@ layui.define(function(exports){
       .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
     },
     error: function(e, tplog){
-      var error = 'Laytpl Error：';
+      var error = 'Laytpl Error: ';
       typeof console === 'object' && console.error(error + e + '\n'+ (tplog || ''));
       return error + e;
     }
@@ -51,15 +50,27 @@ layui.define(function(exports){
     var that = this, tplog = tpl;
     var jss = exp('^'+config.open+'#', ''), jsse = exp(config.close+'$', '');
     
-    tpl = tpl.replace(/\s+|\r|\t|\n/g, ' ').replace(exp(config.open+'#'), config.open+'# ')
-    
+    tpl = tpl.replace(/\s+|\r|\t|\n/g, ' ')
+    .replace(exp(config.open+'#'), config.open+'# ')
     .replace(exp(config.close+'}'), '} '+config.close).replace(/\\/g, '\\\\')
     
-    .replace(/(?="|')/g, '\\').replace(tool.query(), function(str){
-      str = str.replace(jss, '').replace(jsse, '');
-      return '";' + str.replace(/\\/g, '') + ';view+="';
+    //不匹配指定区域的内容
+    .replace(exp(config.open + '!(.+?)!' + config.close), function(str){
+      str = str.replace(exp('^'+ config.open + '!'), '')
+      .replace(exp('!'+ config.close), '')
+      .replace(exp(config.open + '|' + config.close), function(tag){
+        return tag.replace(/(.)/g, '\\$1')
+      });
+      return str
     })
     
+    //匹配JS规则内容
+    .replace(/(?="|')/g, '\\').replace(tool.query(), function(str){
+      str = str.replace(jss, '').replace(jsse, '');
+      return '";' + str.replace(/\\(.)/g, '$1') + ';view+="';
+    })
+    
+    //匹配普通字段
     .replace(tool.query(1), function(str){
       var start = '"+(';
       if(str.replace(/\s/g, '') === config.open+config.close){
@@ -70,7 +81,7 @@ layui.define(function(exports){
         str = str.replace(/^=/, '');
         start = '"+_escape_(';
       }
-      return start + str.replace(/\\/g, '') + ')+"';
+      return start + str.replace(/\\(.)/g, '$1') + ')+"';
     });
     
     tpl = '"use strict";var view = "' + tpl + '";return view;';

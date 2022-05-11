@@ -4,6 +4,7 @@ import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.KeyComparator;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.domain.vo.NodeVo;
 import com.revers.rec.util.cypher.DigestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.K;
@@ -43,7 +44,6 @@ public class RoutingTableImpl implements RoutingTable{
         list.get(localNode.getNodeId().getDistance(n.getNodeId())).insert(n);
 
     }
-
 
     public synchronized List<Node> findClosest(KademliaId target) {
         TreeSet<Node> sortedSet = new TreeSet<>(new KeyComparator(target));
@@ -86,28 +86,15 @@ public class RoutingTableImpl implements RoutingTable{
         return this.list.toArray(new Bucket[0]);
     }
 
-/*    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("\nPrinting Routing Table Started ***************** \n");
-        int totalContacts = 0;
-        for (Bucket b : this.list)
-        {
-            if (b.getDepth() > 0)
-            {
-                sb.append("# nodes in Bucket with depth ");
-                sb.append(b.getDepth());
-                sb.append(": ");
-                sb.append(b.toString());
-                sb.append("\n");
+    @Override
+    public List<NodeVo> getAllNodeVo(){
+        List<NodeVo> nodes = new ArrayList<>();
+        for(int i = 0 ; i<= 160 ; i++){
+            for(Node n : list.get(i).getBucket()){
+                nodes.add(new NodeVo(n.getNodeId().toString(),n.getInetAddress()+":"+n.getPort(),i));
             }
         }
+        return nodes;
+    }
 
-        sb.append("\nTotal Contacts: ");
-        sb.append(totalContacts);
-        sb.append("\n\n");
-
-        sb.append("Printing Routing Table Ended ******************** ");
-
-        return sb.toString();
-    }*/
 }

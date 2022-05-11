@@ -225,7 +225,7 @@ layui.use(['layim', 'jquery', 'laytpl'], function(layim){
 	    		  type: 2,
 	    		  title: "修改个人信息",
 	    		  skin: 'layui-layer-rim',
-	    		  area: ['500px', '550px'], 
+	    		  area: ['500px', '670px'],
 	    		  content: '/static/html/userinfo.html'
 	    	  });
 	      });

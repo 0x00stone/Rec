@@ -197,7 +197,6 @@ public class ScanThreadMethod {
             }
         }).start();
         Menu.printTips();
-
     }
 
 }

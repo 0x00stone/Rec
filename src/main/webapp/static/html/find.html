@@ -7,158 +7,162 @@
 <script src="/static/layui/layui.js"></script>
 </head>
 <body class="gray-bg">
-	<div class="layui-tab layui-tab-card">
+	<div class="layui-tab layui-tab-card" lay-filter="routing">
 		<ul class="layui-tab-title">
-			<li class="layui-this">找人</li>
-			<li>找群</li>
+			<li lay-id="1">连接服务器进入频道</li>
+			<li lay-id="2">关联好友</li>
+			<li lay-id="3">向陌生人发送信息</li>
+			<li lay-id="4">查看路由表</li>
 		</ul>
+
 		<div class="layui-tab-content">
-			<div class="layui-tab-item layui-show layui-form layui-friend">
-				<div class="layui-form-item">
-					<input type="text" name="friend_name" placeholder="请输入昵称"
-						autocomplete="off" class="layui-input layui-input-inline">
-					<input type="radio" name="sex" value="0" title="女">
-					<input type="radio" name="sex" value="1" title="男">
-					<input type="radio" name="sex" value="" title="中性" checked>
-					<button id="findFriend" class="layui-btn layui-btn-normal">搜索</button>
-				</div>
-			</div>
-			<div class="layui-tab-item layui-group">
-				<div class="layui-tab-item layui-show layui-form">
-					<div class="layui-form-item">
-						<input type="text" name="group_name" placeholder="请输入群昵称"
-							autocomplete="off" class="layui-input layui-input-inline">
-						<button id="findGroup" class="layui-btn layui-btn-normal">搜索</button>
-						<button id="myGroup" class="layui-btn layui-btn-warm">我的群</button>
-						<button id="createGroup" class="layui-btn">创建群</button>
+			<!-- 连接服务器进入频道 -->
+			<div class="layui-tab-item layui-form">
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">ip:</label>
+					<div class="layui-input-block">
+						<input id="ipAddressText" type="text" name="title" required lay-verify="required" placeholder="请输入ip地址" autocomplete="off" class="layui-input">
 					</div>
 				</div>
+
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">端口:</label>
+					<div class="layui-input-block">
+						<input id="portText" type="text" name="title" required lay-verify="required" placeholder="请输入端口号" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button id="inNet" class="layui-btn" lay-submit >连接网络</button>
+					</div>
+				</div>
+			</div>
+			<!-- 关联好友 -->
+			<div class="layui-tab-item layui-form">
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">公钥:</label>
+					<div class="layui-input-block">
+						<textarea id = "mekeFriendPublicKey" name="desc" placeholder="请输入公钥" class="layui-textarea"></textarea>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">昵称:</label>
+					<div class="layui-input-block">
+						<input id="mekeFriendName" type="text" name="title" required lay-verify="required" placeholder="请输入昵称" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button id="makeFriend" class="layui-btn" lay-submit >添加好友</button>
+					</div>
+				</div>
+			</div>
+			<!-- 向陌生人发送信息 -->
+			<div class="layui-tab-item layui-form">
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">信息:</label>
+					<div class="layui-input-block">
+						<textarea id = "sendMessagesMessage" name="desc" placeholder="请输入通讯内容" class="layui-textarea"></textarea>
+					</div>
+				</div>
+
+				<div class="layui-form-item layui-form-text">
+					<label class="layui-form-label">公钥:</label>
+					<div class="layui-input-block">
+						<textarea id = "sendMessagesPublicKey" name="desc" placeholder="请输入对方公钥" class="layui-textarea"></textarea>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button id="sendMessages" class="layui-btn" lay-submit >发送信息</button>
+					</div>
+				</div>
+			</div>
+			<!-- 查看路由表 -->
+			<div class="layui-tab-item layui-form" lay-filter="routing">
+				<table class="layui-table" lay-data="{url:'/user/findRoutingTable', page:false, id:'tableInstance'}">
+					<thead>
+						<th lay-data="{field:'bucketId',width:1,sort:true}">bucketId</th>
+						<th lay-data="{field:'nodeId',width:120,sort:false}">节点Id</th>
+						<th lay-data="{field:'nodeAddress',width:90,sort:false}">节点地址</th>
+					</thead>
+				</table>
 			</div>
 		</div>
 	</div>
 </body>
 <script type="text/javascript">
-	var showAddFriend;
-	var showAddGroup;
-	layui.use([ 'element', 'jquery', 'layer', 'form', 'upload', 'flow'],function() {
-		var element = layui.element, $ = layui.jquery, form = layui.form(), layer = layui.layer,flow = layui.flow;
+	layui.use([ 'element', 'jquery', 'layer', 'form', 'upload', 'flow','table'],function() {
+		var element = layui.element, $ = layui.jquery, form = layui.form, layer = layui.layer, flow = layui.flow,table = layui.table;
 		//屏蔽右键菜单
-		$(document).bind("contextmenu",function(e){
-	        return false;
-	    });
-		//父级窗口的对象
-		var socket = parent.socket, layim = parent.layim;
-		//显示添加好友面板
-		showAddFriend = function(item) {
-			var mine = layim.cache().mine;
-			var $item = $(item);
-			var img = $item.find("img").attr("src");
-			var username = $item.find("cite").text();
-			var id = $item.attr("layim-data-uid");
-			var index = layim.add({
-				type: 'friend' //friend：申请加好友、group：申请加群
-				,username: username //好友昵称，若申请加群，参数为：groupname
-				,avatar: img
-				,submit: function(group, remark, index){ //一般在此执行Ajax和WS，以通知对方
-					socket.send(JSON.stringify({
-			    		type:"addFriend",
-			    		mine:mine,
-			    		to:{"id":id},
-			    		msg:JSON.stringify({"groupId":group,"remark":remark,"Type":"0"})
-			    	}));
-					layer.msg('申请已发送，请等待对方确认', {icon: 1,shade: 0.5}, function(){layer.close(index);});
-				}
-			});
-		}
-		$("#createGroup").click(function(){
-			layer.open({
-				  type: 2,
-				  title: "创建群组",
-				  area: ['400px', '270px'], //宽高
-				  content: '/static/html/creategroup.html',
-				  success: function(layero, index){		
-				  }
-			}); 
-		})
-		//显示添加群面板
-		showAddGroup = function(item) {
-			var mine = layim.cache().mine;
-			var $item = $(item);
-			var img = $item.find("img").attr("src");
-			var groupname = $item.find("cite").text();
-			var id = $item.attr("layim-data-uid");
-			var groupId = $item.attr("layim-data-group-id");
-			console.log($item);
-			var index = layim.add({
-				type: 'group' //friend：申请加好友、group：申请加群
-				,groupname: groupname //好友昵称，若申请加群，参数为：groupname
-				,avatar: img
-				,submit: function(group, remark, index){ //一般在此执行Ajax和WS，以通知对方
-					socket.send(JSON.stringify({
-			    		type:"addGroup",
-			    		mine:mine,
-			    		to:{"id":id},
-			    		msg:JSON.stringify({"groupId":groupId,"remark":remark,"Type":"0"})
-			    	}));
-					layer.msg('申请已发送，请等待对方确认', {icon: 1,shade: 0.5}, function(){layer.close(index);});
-				}
-			});
-		}
-		//找人		
-		$("#findFriend").click(function(){
-			$("#users").remove();
-			$(".layui-friend").append("<ul id='users'></ul>");
-			var name = $("input[name='friend_name']").val();
-			var sex = $("input[type='radio']:checked").val();
-			flow.load({
-			    elem: '#users'
-			    ,done: function(page, next){
-			      var lis = [];
-			      var params = "sex="+ sex;
-			      if(name != null && "" != name) {
-			    	  params += "&name=" + name; 
-			      }
-			      $.get('/user/findUsers?' + params + '&page='+page, function(res){
-			    	  res = eval("(" + res + ")");
-		    	      layui.each(res.data, function(index, item){
-		    	    	  var img = '<img style="width: 40px; height: 40px; border-radius: 100%;" src ="' + item.avatar + '"/>';
-		    	    	  var cite = '<cite style="display: block;padding-top:10px; font-size: 14px;">' + item.username + '</cite>';
-		    	    	  var a = '<a style="cursor:pointer" layim-data-uid=' + item.id + ' onclick="showAddFriend(this);">' + img + cite + '</a>';
-		    	    	  var li = '<li class="layim-user" style="margin:20px 20px;display: inline-block;">'+ a +' </li>';	    	  
-		    	          lis.push(li);
-		    	      }); 
-		    	      next(lis.join(''), page < res.pages);    
-			      });
-			    }
-			});	
+		$(document).bind("contextmenu", function (e) {
+			return false;
 		});
-		//找群
-		$("#findGroup").click(function(){
-			var name = $("input[name='group_name']").val();
-			$("#groups").remove();
-			$(".layui-group").append("<ul id='groups'></ul>");
-			flow.load({
-			    elem: '#groups'
-			    ,done: function(page, next){
-			      var lis = [];
-			      var params = 'page='+page;
-			      if(name != null && "" != name) {
-			    	  params += "&name=" + name; 
-			      }
-			      $.get('/user/findGroups?' + params , function(res){
-			    	  res = eval("(" + res + ")");
-		    	      layui.each(res.data, function(index, item){
-		    	    	  var img = '<img style="width: 40px; height: 40px; border-radius: 100%;" src ="' + item.avatar + '"/>';
-		    	    	  var cite = '<cite style="display: block;padding-top:10px; font-size: 14px;">' + item.groupname + '</cite>';
-		    	    	  var a = '<a style="cursor:pointer" layim-data-group-id=' + item.id + ' layim-data-uid=' + item.createId + ' onclick="showAddGroup(this);">' + img + cite + '</a>';
-		    	    	  var li = '<li class="layim-user" style="margin:20px 20px;display: inline-block;">'+ a +' </li>';	    	  
-		    	          lis.push(li);
-		    	      }); 
-		    	      next(lis.join(''), page < res.pages);    
-			      });
-			    }
-			});
-		})
-	});
+
+		//加入网络
+		$("#inNet").click(function () {
+			var ip = document.getElementById("ipAddressText").value;
+			var port = document.getElementById("portText").value;
+
+			var parame = {ip: ip, port: port};
+			$.ajax({
+				type: 'post',
+				url: '/user/connectNetwork',
+				contentType: 'application/json',
+				data: JSON.stringify(parame),
+				success: function (data) {
+					console.log(data);
+					layer.msg(JSON.stringify(data));
+				}
+			})
+		});
+		//添加好友
+		$("#makeFriend").click(function () {
+			var mekeFriendPublicKey = document.getElementById("mekeFriendPublicKey").value;
+			var mekeFriendName = document.getElementById("mekeFriendName").value;
+			var parame = {mekeFriendPublicKey: mekeFriendPublicKey, mekeFriendName: mekeFriendName};
+
+			$.ajax({
+				type: 'post',
+				url: '/user/makeFriend',
+				contentType: 'application/json',
+				data: JSON.stringify(parame),
+				success: function (data) {
+					console.log(data);
+					layer.msg(JSON.stringify(data));
+				}
+			})
+		});
+		//向陌生人发送信息
+		$("#sendMessages").click(function () {
+			var sendMessagesMessage = document.getElementById("sendMessagesMessage").value;
+			var sendMessagesPublicKey = document.getElementById("sendMessagesPublicKey").value;
+
+			var parame = {message: sendMessagesMessage, publicKey: sendMessagesPublicKey};
+			$.ajax({
+				type: 'post',
+				url: '/user/sendMessagesToStranger',
+				contentType: 'application/json',
+				data: JSON.stringify(parame),
+				success: function (data) {
+					console.log(data);
+					layer.msg(JSON.stringify(data));
+				}
+			})
+		});
+
+		element.on('tab(routing)', function(data){
+			console.log(data.index); //得到当前Tab的所在下标
+			if(data.index == 3){
+				table.reload('tableInstance');
+			}
+		});
+	})
+
+
 </script>
 </html>

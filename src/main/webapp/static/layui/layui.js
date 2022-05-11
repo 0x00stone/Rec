@@ -77,6 +77,38 @@ Lay.fn.define = function(deps, callback){
   return that;
 };
 
+//typeof 类型细分 -> string/number/boolean/undefined/null、object/array/function/…
+  Lay.prototype._typeof = function(operand){
+    if(operand === null) return String(operand);
+
+    //细分引用类型
+    return (typeof operand === 'object' || typeof operand === 'function') ? function(){
+      var type = Object.prototype.toString.call(operand).match(/\s(.+)\]$/) || [] //匹配类型字符
+          ,classType = 'Function|Array|Date|RegExp|Object|Error|Symbol'; //常见类型字符
+
+      type = type[1] || 'Object';
+
+      //除匹配到的类型外，其他对象均返回 object
+      return new RegExp('\\b('+ classType + ')\\b').test(type)
+          ? type.toLowerCase()
+          : 'object';
+    }() : typeof operand;
+  };
+
+  //对象是否具备数组结构（此处为兼容 jQuery 对象）
+  Lay.prototype._isArray = function(obj){
+    var that = this
+        ,len
+        ,type = that._typeof(obj);
+
+    if(!obj || (typeof obj !== 'object') || obj === win) return false;
+
+    len = 'length' in obj && obj.length; //兼容 ie
+    return type === 'array' || len === 0 || (
+        typeof len === 'number' && len > 0 && (len - 1) in obj //兼容 jQuery 对象
+    );
+  };
+
 //使用特定模块
 Lay.fn.use = function(apps, callback, exports){
   var that = this, dir = config.dir = config.dir ? config.dir : getPath;

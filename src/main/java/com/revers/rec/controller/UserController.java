@@ -1,22 +1,23 @@
 package com.revers.rec.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.revers.rec.RecApplication;
+import com.revers.rec.Kademlia.Bucket.RoutingTable;
+import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
-import com.revers.rec.domain.ChatHistory;
-import com.revers.rec.domain.Friend;
-import com.revers.rec.domain.Group;
-import com.revers.rec.domain.Indexer;
-import com.revers.rec.domain.front.FrontMessage;
+import com.revers.rec.domain.*;
 import com.revers.rec.domain.json.JsonGroup;
 import com.revers.rec.domain.json.JsonUser;
+import com.revers.rec.domain.vo.MakeFriend;
+import com.revers.rec.domain.vo.NetAddress;
+import com.revers.rec.domain.vo.NodeVo;
+import com.revers.rec.domain.vo.SendMessagesToStranger;
+import com.revers.rec.net.Client.ClientOperation;
 import com.revers.rec.service.friend.FriendService;
 import com.revers.rec.service.group.GroupService;
 import com.revers.rec.service.message.MessageService;
 import com.revers.rec.service.user.UserService;
 import com.revers.rec.util.ConstantUtil;
 import com.revers.rec.util.Result;
-import com.revers.rec.websocket.WebSocketMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,20 +45,10 @@ public class UserController {
     private FriendService friendService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private RoutingTable routingTable;
 
-    //    /**
-    //     * @description 退出群
-    //     * @param groupId 群编号
-    //     * @param request
-    //     * @return
-    //     */
-    //    @ResponseBody
-    //    @RequestMapping(value = Array("/leaveOutGroup"), method = Array(RequestMethod.POST))
-    //    def leaveOutGroup(@RequestParam("groupId") groupId: Integer, request: HttpServletRequest): String = {
-    //        val user = request.getSession.getAttribute("user").asInstanceOf[User]
-    //        val result = userService.leaveOutGroup(groupId, user.getId)
-    //        gson.toJson(new ResultSet(result))
-    //    }
+
     //
     //    /**
     //     * @description 删除好友
@@ -203,6 +194,118 @@ public class UserController {
         return "chatLog";
     }
 
+    /**
+     * @description 添加网络
+     */
+    @ResponseBody
+    @RequestMapping(value = "/connectNetwork", method = RequestMethod.POST)
+    public String connectNetwork(@RequestBody NetAddress netAddress) {
+        String msg = "连接失败";
+        String ip = netAddress.getIp();
+        String port = netAddress.getPort();
+        if ("".equals(ip) || "".equals(port) || ip == null || port == null) {
+            return "地址存在空值";
+        }
+        try {
+            if (ClientOperation.handShake(ip, Integer.valueOf(port)).getFlag() == ConstantUtil.SUCCESS) {
+                msg = "连接成功";
+                log.info("握手成功");
+            } else {
+                msg = "连接失败";
+                log.info("握手失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            msg = "连接失败";
+            log.info("连接失败");
+        }
+
+        return msg;
+    }
+
+    /**
+     * @description 添加好友
+     */
+    @ResponseBody
+    @RequestMapping(value = "/makeFriend", method = RequestMethod.POST)
+    public String makeFriend(@RequestBody MakeFriend makeFriend) {
+        String publicKey = makeFriend.getPubicKey();
+        String name = makeFriend.getName();
+        if ("".equals(publicKey) || "".equals(name) || publicKey == null || name == null) {
+            return "添加好友时存在空值";
+        }
+        Friend friendByFriendPublicKey = friendService.findFriendByFriendPublicKey(publicKey);
+        if(friendByFriendPublicKey != null){
+            return "该好友公钥已经存在";
+        }
+        Friend friendByName = friendService.findFriendByName(name);
+        if(friendByName != null){
+            return "该好友昵称已经存在";
+        }
+        friendService.addFriend(publicKey, name);
+        return "添加好友成功";
+    }
+
+
+    /**
+     * @description 查询路由表
+     */
+    @ResponseBody
+    @RequestMapping(value = "/findRoutingTable", method = RequestMethod.GET)
+    public String findRoutingTable(@RequestParam("page") Integer page,@RequestParam("limit") Integer limit) {
+        log.info("查询路由表");
+
+        List<NodeVo> allNodeVo = routingTable.getAllNodeVo();
+
+        HashMap<String,String> map = new HashMap<>();
+        map.put("code","0");
+        map.put("msg","");
+        map.put("count",String.valueOf(allNodeVo.size()));
+        map.put("data",JSON.toJSONString(allNodeVo));
+
+        return JSON.toJSONString(map).replace("\\","")
+                .replace("\"}\"","\"}")
+                .replace("\"{\"","{\"")
+                .replace("\"[","[")
+                .replace("]\"","]");
+    }
+
+
+    /**
+     * @description 发送消息给陌生人
+     */
+    @ResponseBody
+    @RequestMapping(value = "/sendMessagesToStranger", method = RequestMethod.POST)
+    public String sendMessagesToStranger(@RequestBody SendMessagesToStranger sendMessagesToStranger) {
+        String publicKey = sendMessagesToStranger.getPublicKey();
+        String message = sendMessagesToStranger.getMessage();
+        if ("".equals(publicKey) || "".equals(message) || publicKey == null || message == null) {
+            return "发送消息时存在空值";
+        }
+
+        Result communicate = null;
+        try {
+            communicate = ClientOperation.communicate(publicKey, message);
+            if(communicate != null && communicate.getFlag() == ConstantUtil.SUCCESS){
+                if(ConstantUtil.COMMUNICATE_SUCCESS.equals(((Data)communicate.getData()).getData())){
+                    //存储消息
+                    messageService.saveMessage(message,publicKey,true);
+                    log.info("已接收");
+                    return "已接收";
+                }else {
+                    log.info("未接收");
+                    return "未接收";
+                }
+            }else {
+                log.info("发送失败");
+                return "发送失败";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.info("发送失败");
+            return "发送失败";
+        }
+    }
     //    /**
     //     * @description 获取离线消息
     //     */
@@ -221,22 +324,37 @@ public class UserController {
     //    }
     //
     //
-    //    /**
-    //     * @description 更新签名
-    //     * @param sign
-    //     *
-    //     */
-    //    @ResponseBody
-    //    @RequestMapping(value = Array("/updateSign"), method = Array(RequestMethod.POST))
-    //    def updateSign(request: HttpServletRequest, @RequestParam("sign") sign: String): String = {
-    //        val user:User = request.getSession.getAttribute("user").asInstanceOf[User]
-    //        user.setSign(sign)
-    //        if(userService.updateSing(user)) {
-    //            gson.toJson(new ResultSet)
-    //        } else {
-    //            gson.toJson(new ResultSet(SystemConstant.ERROR, SystemConstant.ERROR_MESSAGE))
-    //        }
-    //    }
+//        /**
+//         * @description 更新签名
+//         * @param sign
+//         *
+//         */
+//        @ResponseBody
+//        @RequestMapping(value = Array("/updateSign"), method = Array(RequestMethod.POST))
+//        def updateSign(request: HttpServletRequest, @RequestParam("sign") sign: String): String = {
+//            val user:User = request.getSession.getAttribute("user").asInstanceOf[User]
+//            user.setSign(sign)
+//            if(userService.updateSing(user)) {
+//                gson.toJson(new ResultSet)
+//            } else {
+//                gson.toJson(new ResultSet(SystemConstant.ERROR, SystemConstant.ERROR_MESSAGE))
+//            }
+//        }
+    /**
+     * @description 更新签名
+     * @param sign
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateSign", method = RequestMethod.POST)
+    public String updateSign(@RequestParam("sign") String sign) {
+        userService.setSign(sign);
+        AccountConfig.setSign(sign);
+        Result result = new Result();
+        result.setMsg("修改成功");
+        result.setFlag(ConstantUtil.SUCCESS);
+        return JSON.toJSONString(result);
+    }
+
 
     /**
     * @description 注册
@@ -293,23 +411,7 @@ public class UserController {
         }
 
     }
-    //    @ResponseBody
-    //    @RequestMapping(value = Array("/login"), method = Array(RequestMethod.POST))
-    //    def login(@RequestBody user: User, request: HttpServletRequest): String = {
-    //        val u: User = userService.matchUser(user)
-    //        //未激活
-    //        if (u != null && "nonactivated".equals(u.getStatus)) {
-    //            return gson.toJson(new ResultSet[User](SystemConstant.ERROR, SystemConstant.NONACTIVED))
-    //        } else if(u != null && !"nonactivated".equals(u.getStatus)) {
-    //            LOGGER.info(user + "成功登陆服务器")
-    //            request.getSession.setAttribute("user", u);
-    //            return gson.toJson(new ResultSet[User](u))
-    //        } else {
-    //            var result = new ResultSet[User](SystemConstant.ERROR, SystemConstant.LOGGIN_FAIL)
-    //            gson.toJson(result)
-    //        }
-    //    }
-    //
+
         /**
          * @description  初始化主界面数据
          *
@@ -353,6 +455,7 @@ public class UserController {
             mine.setAvatar(AccountConfig.getPortrait());
             mine.setSign(AccountConfig.getSign());
             mine.setStatus(AccountConfig.getStatus());
+            mine.setPublicKey(AccountConfig.getPublicKey());
 
             HashMap<String,Object> data = new HashMap<>();
             data.put("friend",jsonGroups);
@@ -365,20 +468,7 @@ public class UserController {
 
             return JSON.toJSONString(map);
         }
-    //
-    //    /**
-    //     * @description 获取群成员
-    //     * @param id
-    //     *
-    //     */
-    //    @ResponseBody
-    //    @RequestMapping(value = Array("/getMembers"), method = Array(RequestMethod.GET))
-    //    def getMembers(@RequestParam("id") id: Int): String = {
-    //        val users = userService.findUserByGroupId(id)
-    //        val friends = new FriendList(users)
-    //        gson.toJson(new ResultSet[FriendList](friends))
-    //    }
-    //
+
     //    /**
     //     * @description 客户端上传图片
     //     * @param file
@@ -465,5 +555,6 @@ public class UserController {
     //        gson.toJson(new ResultSet(userService.findUserById(id)))
     //    }
     //
+
 
 }
