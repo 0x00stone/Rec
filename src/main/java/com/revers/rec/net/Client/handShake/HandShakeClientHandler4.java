@@ -3,6 +3,7 @@ package com.revers.rec.net.Client.handShake;
 import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Node.KademliaId;
 import com.revers.rec.Kademlia.Node.Node;
+import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.ConnectKey;
 import com.revers.rec.domain.protobuf.MsgProtobuf;
 import com.revers.rec.service.connectKey.ConnectKeyService;
@@ -50,7 +51,8 @@ public class HandShakeClientHandler4 extends ChannelInboundHandlerAdapter {
                 if(connectKey == null){
                     //创建连接密钥
                     connectKey = new ConnectKey();
-                    connectKey.setId(DigestUtil.Sha1AndSha256(publicKey));
+                    connectKey.setId1(DigestUtil.Sha1AndSha256(publicKey));
+                    connectKey.setId2(AccountConfig.getId());
                     connectKey.setAesKey(AES);
                     connectKey.setPublicKey(publicKey);
                     connectKey.setTimeStamp(System.currentTimeMillis());

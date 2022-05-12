@@ -13,7 +13,9 @@ import java.io.Serializable;
 @Setter
 @ToString
 public class ConnectKey implements Serializable {
-    private String Id;
+    private String id;
+    private String id1;
+    private String id2;
     private String publicKey;
     private String aesKey;
     private Integer order;

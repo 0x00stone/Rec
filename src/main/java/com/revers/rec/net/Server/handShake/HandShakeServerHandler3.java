@@ -54,7 +54,8 @@ public class HandShakeServerHandler3 extends ChannelInboundHandlerAdapter {
             if(connectKey == null){
                 //创建连接密钥
                 connectKey = new ConnectKey();
-                connectKey.setId(DigestUtil.Sha1AndSha256(publicKey));
+                connectKey.setId1(DigestUtil.Sha1AndSha256(publicKey));
+                connectKey.setId2(AccountConfig.getId());
                 connectKey.setAesKey(AES);
                 connectKey.setPublicKey(publicKey);
                 connectKey.setTimeStamp(System.currentTimeMillis());
