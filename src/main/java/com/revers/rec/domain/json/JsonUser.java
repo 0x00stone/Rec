@@ -15,6 +15,7 @@ public class JsonUser{
     private String sign;
     private String avatar;
     private String publicKey;
+    private String port;
 
     public JsonUser() {}
 

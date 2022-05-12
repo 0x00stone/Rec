@@ -18,7 +18,7 @@
 			<div class="layui-form-item">
 				<label id="user_name" class="layui-form-label">用户名</label>
 				<div class="layui-input-inline">
-					<input type="text" id="username" name="username" autocomplete="off" class="layui-input" value="">
+					<input type="text" id="username" name="username" autocomplete="off" class="layui-input" value="" disabled="true">
 				</div>				
 			</div>
 			
@@ -29,11 +29,18 @@
                      <input name="avatar" class="layui-upload-file" id="avatar" type="file">
                 </div>
             </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">本地监听端口号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="listenPort" name="listenPort" class="layui-input" value="" disabled="true">
+                </div>
+            </div>
             
 			<div class="layui-form-item" id="copyId">
 				<label id="user_id" class="layui-form-label">nodeId</label>
 				<div class="layui-input-inline">
-					<input id="nodeId" name="id" class="layui-input" value="" disabled="true">
+					<input type="text" id="nodeId" name="id" class="layui-input" value="" disabled="true">
 				</div>
 			</div>
 
@@ -47,7 +54,7 @@
 			<div class="layui-form-item">
 				<label id="user_email" class="layui-form-label">签名</label>
 				<div class="layui-input-inline">
-					<input type="text" id="sign" name="sign" autocomplete="off" class="layui-input" style="width: 350px;">
+					<input type="text" id="sign" name="sign" autocomplete="off" class="layui-input" style="width: 350px;" disabled="true">
 				</div>
 			</div>
 		</div>

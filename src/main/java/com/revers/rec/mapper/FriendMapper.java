@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface FriendMapper {
 
-    @Insert("INSERT INTO friend(myId , friendPublicKey , friendName ,createTime,groupId) VALUES (#{myId}, #{friendPublicKey} , #{friendName} , #{createTime} , #{groupId})")
+    @Insert("INSERT INTO friend(myId , friendPublicKey , friendName ,createTime,groupId,friendId,portrait) VALUES (#{myId}, #{friendPublicKey} , #{friendName} , #{createTime} , #{groupId},#{friendId},#{portrait})")
     @SelectKey(statement = "SELECT HEX(RANDOMBLOB(16)) as id;", before = true, keyProperty = "id", keyColumn = "id",resultType = String.class)
     public void insertFriend(Friend friend);
 
@@ -19,8 +19,8 @@ public interface FriendMapper {
     @Select("SELECT * FROM friend WHERE id = #{id}")
     public Friend findFriendById(String id);
 
-    @Select("SELECT * FROM friend WHERE friendPublicKey = #{friendPublicKey}")
-    public Friend findFriendByPublicKey(String friendPublicKey);
+    @Select("SELECT * FROM friend WHERE friendPublicKey = #{friendPublicKey} and myId = #{myId}")
+    public Friend findFriendByPublicKey(String friendPublicKey,String myId);
 
     @Select("SELECT * FROM friend WHERE myId = #{myId} and friendId = #{friendId}")
     public Friend findFriendByFriendId(String myId,String friendId);

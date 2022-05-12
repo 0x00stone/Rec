@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface FriendService {
 
-    public void addFriend(String friendPublicKey,String friendName);
-
     void addFriend(String friendName, String friendPublicKey, String groupId);
 
     void deleteFriendById(String friendId);

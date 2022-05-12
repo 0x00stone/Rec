@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.revers.rec.Kademlia.Bucket.RoutingTable;
 import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
+import com.revers.rec.config.optionConfig;
 import com.revers.rec.domain.*;
 import com.revers.rec.domain.json.JsonGroup;
 import com.revers.rec.domain.json.JsonUser;
@@ -229,8 +230,18 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/makeFriend", method = RequestMethod.POST)
     public String makeFriend(@RequestBody MakeFriend makeFriend) {
-        String publicKey = makeFriend.getPubicKey();
-        String name = makeFriend.getName();
+        String publicKey = makeFriend.getMekeFriendPublicKey();
+        String name = makeFriend.getMekeFriendName();
+        String groupName = makeFriend.getMakeFriendGroupName();
+
+        Group group = groupService.findGroupByName(groupName);
+        if (group == null) {
+            groupService.insertGroup(groupName);
+            group = groupService.findGroupByName(groupName);
+        }
+        String groupId = group.getGroupId();
+
+        log.info("添加好友，publicKey=" + publicKey + ",name=" + name);
         if ("".equals(publicKey) || "".equals(name) || publicKey == null || name == null) {
             return "添加好友时存在空值";
         }
@@ -242,7 +253,7 @@ public class UserController {
         if(friendByName != null){
             return "该好友昵称已经存在";
         }
-        friendService.addFriend(publicKey, name);
+        friendService.addFriend(name,publicKey,groupId);
         return "添加好友成功";
     }
 
@@ -456,6 +467,7 @@ public class UserController {
             mine.setSign(AccountConfig.getSign());
             mine.setStatus(AccountConfig.getStatus());
             mine.setPublicKey(AccountConfig.getPublicKey());
+            mine.setPort(String.valueOf(optionConfig.getServerListenPort()));
 
             HashMap<String,Object> data = new HashMap<>();
             data.put("friend",jsonGroups);

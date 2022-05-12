@@ -11,7 +11,7 @@ public class Menu {
         System.out.println("------------------------------------------------------------------------------");
         System.out.println("+ -- --=[             Rec      v0.0.1                                         ]");
         System.out.println("+ -- --=[ 有关某个命令的详细信息，请键入 HELP 命令名                                  ]");
-        System.out.println("+ -- --=[   /m 好友名称 好友公钥                关联好友                            ]");
+        System.out.println("+ -- --=[   /m 好友名称 好友公钥 分组名           关联好友                            ]");
         System.out.println("+ -- --=[   /u                               查询好友表                          ]");
         System.out.println("+ -- --=[   /h                               帮助菜单                            ]");
         System.out.println("+ -- --=[   /r                               查询最近消息                         ]");

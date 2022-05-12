@@ -6,9 +6,11 @@ import com.revers.rec.Kademlia.Node.Node;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Data;
 import com.revers.rec.domain.Friend;
+import com.revers.rec.domain.Group;
 import com.revers.rec.domain.Message;
 import com.revers.rec.net.Client.ClientOperation;
 import com.revers.rec.service.friend.FriendService;
+import com.revers.rec.service.group.GroupService;
 import com.revers.rec.service.message.MessageService;
 import com.revers.rec.util.BeanContextUtil;
 import com.revers.rec.util.ConstantUtil;
@@ -32,6 +34,9 @@ public class ScanThreadMethod {
 
     @Autowired
     RoutingTable routingTable;
+
+    @Autowired
+    GroupService groupService;
 
     ScanThreadMethod(){
         if(friendService == null){
@@ -116,7 +121,14 @@ public class ScanThreadMethod {
     }
 
     public void m(String[] choice){
-        friendService.addFriend(choice[1],choice[2]);
+        String groupName = choice[3];
+        Group group = groupService.findGroupByName(groupName);
+        if (group == null) {
+            groupService.insertGroup(groupName);
+            group = groupService.findGroupByName(groupName);
+        }
+        String groupId = group.getGroupId();
+        friendService.addFriend(choice[1],choice[2],groupId);
     }
 
     public void u(){

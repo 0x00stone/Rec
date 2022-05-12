@@ -55,6 +55,13 @@
 				</div>
 
 				<div class="layui-form-item">
+					<label class="layui-form-label">分组:</label>
+					<div class="layui-input-block">
+						<input id="groupName" type="text" name="title" required lay-verify="required" placeholder="请输入分组名" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
 					<div class="layui-input-block">
 						<button id="makeFriend" class="layui-btn" lay-submit >添加好友</button>
 					</div>
@@ -124,7 +131,8 @@
 		$("#makeFriend").click(function () {
 			var mekeFriendPublicKey = document.getElementById("mekeFriendPublicKey").value;
 			var mekeFriendName = document.getElementById("mekeFriendName").value;
-			var parame = {mekeFriendPublicKey: mekeFriendPublicKey, mekeFriendName: mekeFriendName};
+			var makeFriendGroupName = document.getElementById("groupName").value;
+			var parame = {mekeFriendPublicKey: mekeFriendPublicKey, mekeFriendName: mekeFriendName,makeFriendGroupName: makeFriendGroupName};
 
 			$.ajax({
 				type: 'post',

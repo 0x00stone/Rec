@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MakeFriend {
-    private String pubicKey;
-    private String name;
+    private String mekeFriendName;
+    private String mekeFriendPublicKey;
+    private String makeFriendGroupName;
 }

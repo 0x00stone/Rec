@@ -3,6 +3,7 @@ package com.revers.rec.service.friend;
 import com.revers.rec.config.AccountConfig;
 import com.revers.rec.domain.Friend;
 import com.revers.rec.mapper.FriendMapper;
+import com.revers.rec.util.cypher.DigestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,6 @@ public class FriendServiceImpl implements FriendService {
     private FriendMapper friendMapper;
 
     @Override
-    public void addFriend(String friendName,String friendPublicKey) {
-        Friend friend = new Friend();
-        friend.setMyId(AccountConfig.getId());
-        friend.setFriendPublicKey(friendPublicKey);
-        friend.setFriendName(friendName);
-        friend.setCreateTime(System.currentTimeMillis());
-        friendMapper.insertFriend(friend);
-    }
-
-    @Override
     public void addFriend(String friendName,String friendPublicKey,String groupId) {
         Friend friend = new Friend();
         friend.setMyId(AccountConfig.getId());
@@ -31,6 +22,8 @@ public class FriendServiceImpl implements FriendService {
         friend.setFriendName(friendName);
         friend.setCreateTime(System.currentTimeMillis());
         friend.setGroupId(groupId);
+        friend.setFriendId(DigestUtil.Sha1AndSha256(friendPublicKey));
+        friend.setPortrait("http://127.0.0.1:9000/static/image/avatar/avatar"+ (int)Math.ceil(Math.random()*10)+".jpg");
         friendMapper.insertFriend(friend);
     }
 
@@ -59,7 +52,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public Friend findFriendByFriendPublicKey(String friendPublicKey){
-        return friendMapper.findFriendByPublicKey(friendPublicKey);
+        return friendMapper.findFriendByPublicKey(friendPublicKey,AccountConfig.getId());
     }
 
     @Override

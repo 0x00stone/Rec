@@ -13,8 +13,5 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class testFriendMapper {
     @Autowired
     FriendService friendService;
-    @Test
-    public void test() {
-        friendService.addFriend("1", "2");
-    }
+
 }

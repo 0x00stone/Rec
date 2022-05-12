@@ -62,6 +62,7 @@ layui.use(['jquery', 'layer', 'form', 'upload'], function() {
 		$("#publicKey").val(mine.publicKey);
 		$("#sign").val(mine.sign);
 		$("#nodeId").val(mine.id);
+		$("#listenPort").val(mine.port);
 		$("#LAY_demo_upload").attr("src", mine.avatar);
 		if (mine.sex == "0") {
 			$("input[type='radio']").eq(0).attr("checked",true);
